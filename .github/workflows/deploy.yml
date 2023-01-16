@@ -1,11 +1,11 @@
 on:
   push:
     branches:
-      - master
+      - main
 
 name: Deploy String boot to Amazon EC2
 env:
-  PROJECT_NAME: action_codedeploy
+  PROJECT_NAME: Backend
 
 jobs:
   deploy:
