@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REPOSITORY=/home/ubuntu/git-action-test
+REPOSITORY=/home/ubuntu/github-action
 cd $REPOSITORY
 
 APP_NAME=demo
