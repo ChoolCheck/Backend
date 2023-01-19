@@ -6,13 +6,13 @@ files:
     overwrite: yes
 
 permissions:
-  - object: /
-    pattern: "**"
+  - object: /home/ubuntu/github_action
     owner: ubuntu
     group: ubuntu
+    mode: 755
 
 hooks:
   ApplicationStart:
     - location: deploy.sh
       timeout: 60
-      runas: ubuntu
+      runas: root
