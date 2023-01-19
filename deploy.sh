@@ -17,5 +17,8 @@ else
     sleep 5
 fi
 
+echo "> $JAR_PATH 에 실행권한 추가"
+chmod +x $JAR_PATH
+
 echo "> $JAR_PATH 배포"
 nohup java -jar $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
