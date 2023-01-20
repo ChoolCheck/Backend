@@ -10,8 +10,7 @@ public class HelloController {
 
     @GetMapping("/hello")
     public String HelloAPI() {
-        System.out.println("Test Success");
-        return "Test Success";
+        return "Hello Api Test";
     }
 
 }
