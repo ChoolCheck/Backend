@@ -37,4 +37,8 @@ out/
 .vscode/
 
 ### Properties ###
-application.properties
+application-security.properties
+src/main/resources/application-security.properties
+src/main/resources/application-security.properties
+src/main/resources/application-security.properties
+src/main/resources/application-security.properties
