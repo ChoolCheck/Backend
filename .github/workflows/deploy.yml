@@ -25,9 +25,8 @@ jobs:
           java-version: 11
       
       - uses: actions/checkout@v2
-      - run: touch ./src/main/resources/application.properties
-      - run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
-      - run: cat ./src/main/resources/application.properties
+      - run: touch ./src/main/resources/application-security.properties
+      - run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application-security.properties
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
