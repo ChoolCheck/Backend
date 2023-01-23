@@ -1,5 +1,7 @@
 package com.uhyeah.choolcheck.web.user;
 
+import com.uhyeah.choolcheck.domain.entity.User;
+import com.uhyeah.choolcheck.web.user.dto.UserLoginRequestDto;
 import com.uhyeah.choolcheck.web.user.dto.UserSaveRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,5 +32,17 @@ public class UserController {
         }
 
         return new ResponseEntity("회원가입 성공", HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity login(@Valid @RequestBody UserLoginRequestDto userLoginRequestDto) {
+
+        User user = userService.login(userLoginRequestDto);
+
+        if (user == null) {
+            return new ResponseEntity("비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity();
     }
 }

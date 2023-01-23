@@ -1,5 +1,6 @@
 package com.uhyeah.choolcheck.domain.entity;
 
+import com.uhyeah.choolcheck.domain.enums.Authority;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,10 +21,14 @@ public class User extends BaseTimeEntity{
 
     private String storeName;
 
+    @Enumerated(EnumType.STRING)
+    private Authority authority;
+
     @Builder
-    public User(String email, String password, String storeName) {
+    public User(String email, String password, String storeName, Authority authority) {
         this.email = email;
         this.password = password;
         this.storeName = storeName;
+        this.authority = authority;
     }
 }

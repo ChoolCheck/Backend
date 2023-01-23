@@ -29,4 +29,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(errorCode.getMessage() + " > " + stringBuilder.toString(), errorCode.getHttpStatus());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
+
+        log.error("[exceptionHandle] IllegalArgumentException");
+        StatusCode errorCode = StatusCode.RESOURCE_NOT_FOUND;
+
+        return new ResponseEntity(errorCode.getMessage() + ">" + e.getMessage(), errorCode.getHttpStatus());
+    }
+
 }
