@@ -12,30 +12,33 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity handleCustomException(CustomException e) {
+
+        StatusResponseDto exceptionResponseDto = new StatusResponseDto(e.getStatusCode(), e.getMessage());
+
+        log.error("[exceptionHandle] CustomException " + exceptionResponseDto.toString());
+        return new ResponseEntity(exceptionResponseDto, e.getStatusCode().getHttpStatus());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handleValidException(MethodArgumentNotValidException e) {
 
-        log.error("[exceptionHandle] MethodArgumentNotValidException");
-        StatusCode errorCode = StatusCode.INVALID_PARAMETER;
         BindingResult bindingResult = e.getBindingResult();
 
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder eMessage = new StringBuilder();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
-            stringBuilder.append("[");
-            stringBuilder.append(fieldError.getDefaultMessage());
-            stringBuilder.append("]");
+            eMessage.append("[");
+            eMessage.append(fieldError.getDefaultMessage());
+            eMessage.append("]");
         }
 
-        return new ResponseEntity(errorCode.getMessage() + " > " + stringBuilder.toString(), errorCode.getHttpStatus());
+        StatusResponseDto exceptionResponseDto = new StatusResponseDto(StatusCode.INVALID_PARAMETER, e.getMessage());
+
+        log.error("[exceptionHandle] MethodArgumentNotValidException" + exceptionResponseDto.toString());
+        return new ResponseEntity(exceptionResponseDto, StatusCode.INVALID_PARAMETER.getHttpStatus());
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
 
-        log.error("[exceptionHandle] IllegalArgumentException");
-        StatusCode errorCode = StatusCode.RESOURCE_NOT_FOUND;
-
-        return new ResponseEntity(errorCode.getMessage() + ">" + e.getMessage(), errorCode.getHttpStatus());
-    }
 
 }

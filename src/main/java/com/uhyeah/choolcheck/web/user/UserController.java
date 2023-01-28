@@ -1,6 +1,8 @@
 package com.uhyeah.choolcheck.web.user;
 
 import com.uhyeah.choolcheck.domain.entity.User;
+import com.uhyeah.choolcheck.web.exception.StatusCode;
+import com.uhyeah.choolcheck.web.exception.StatusResponseDto;
 import com.uhyeah.choolcheck.web.user.dto.UserLoginRequestDto;
 import com.uhyeah.choolcheck.web.user.dto.UserSaveRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -25,24 +27,20 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity signup(@Valid @RequestBody UserSaveRequestDto userSaveRequestDto) {
 
-        Long userId = userService.signup(userSaveRequestDto);
+        userService.signup(userSaveRequestDto);
 
-        if (userId == null) {
-            return new ResponseEntity("존재하는 회원 이메일입니다.", HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity("회원가입 성공", HttpStatus.OK);
+        return new ResponseEntity(StatusCode.SIGNUP_SUCCESS.getMessage(), StatusCode.SIGNUP_SUCCESS.getHttpStatus());
     }
 
-    @PostMapping("/login")
-    public ResponseEntity login(@Valid @RequestBody UserLoginRequestDto userLoginRequestDto) {
-
-        User user = userService.login(userLoginRequestDto);
-
-        if (user == null) {
-            return new ResponseEntity("비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity();
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity login(@Valid @RequestBody UserLoginRequestDto userLoginRequestDto) {
+//
+//        User user = userService.login(userLoginRequestDto);
+//
+//        if (user == null) {
+//            return new ResponseEntity("비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
+//        }
+//
+//        return new ResponseEntity();
+//    }
 }
