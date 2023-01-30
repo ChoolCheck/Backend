@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
             eMessage.append("]");
         }
 
-        StatusResponseDto exceptionResponseDto = new StatusResponseDto(StatusCode.INVALID_PARAMETER, e.getMessage());
+        StatusResponseDto exceptionResponseDto = new StatusResponseDto(StatusCode.INVALID_PARAMETER, eMessage.toString());
 
         log.error("[exceptionHandle] MethodArgumentNotValidException" + exceptionResponseDto.toString());
         return new ResponseEntity(exceptionResponseDto, StatusCode.INVALID_PARAMETER.getHttpStatus());

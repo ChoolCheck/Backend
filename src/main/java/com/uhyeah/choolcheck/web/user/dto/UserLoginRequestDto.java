@@ -2,11 +2,14 @@ package com.uhyeah.choolcheck.web.user.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+@NoArgsConstructor
 @Getter
 public class UserLoginRequestDto {
 
@@ -21,5 +24,9 @@ public class UserLoginRequestDto {
     public UserLoginRequestDto(String email, String password) {
         this.email = email;
         this.password = password;
+    }
+
+    public UsernamePasswordAuthenticationToken toAuthentication() {
+        return new UsernamePasswordAuthenticationToken(email, password);
     }
 }

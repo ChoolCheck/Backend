@@ -1,9 +1,11 @@
 package com.uhyeah.choolcheck.web.user.dto;
 
 import com.uhyeah.choolcheck.domain.entity.User;
+import com.uhyeah.choolcheck.domain.enums.Authority;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -24,8 +26,6 @@ public class UserSaveRequestDto {
     @NotBlank(message = "상호명은 필수항목입니다.")
     private String storeName;
 
-    private String passwordEncoded;
-
     @Builder
     public UserSaveRequestDto(String email, String password, String storeName) {
         this.email = email;
@@ -33,15 +33,12 @@ public class UserSaveRequestDto {
         this.storeName = storeName;
     }
 
-    public void setPasswordEncoded(String passwordEncoded) {
-        this.passwordEncoded = passwordEncoded;
-    }
-
-    public User toEntity() {
+    public User toEntity(PasswordEncoder passwordEncoder) {
         return User.builder()
                 .email(email)
-                .password(passwordEncoded)
+                .password(passwordEncoder.encode(password))
                 .storeName(storeName)
+                .authority(Authority.ROLE_USER)
                 .build();
 
     }
