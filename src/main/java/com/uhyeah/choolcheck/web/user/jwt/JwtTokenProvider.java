@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.user;
+package com.uhyeah.choolcheck.web.user.jwt;
 
 import com.uhyeah.choolcheck.web.user.dto.TokenResponseDto;
 import io.jsonwebtoken.*;

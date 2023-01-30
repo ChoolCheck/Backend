@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.user;
+package com.uhyeah.choolcheck.web.user.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uhyeah.choolcheck.web.exception.CustomException;

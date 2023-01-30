@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.user;
+package com.uhyeah.choolcheck.web.user.jwt;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;

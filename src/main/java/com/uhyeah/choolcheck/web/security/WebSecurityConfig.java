@@ -1,9 +1,9 @@
 package com.uhyeah.choolcheck.web.security;
 
-import com.uhyeah.choolcheck.web.user.CustomUserDetailsService;
-import com.uhyeah.choolcheck.web.user.JwtAuthenticationEntryPoint;
-import com.uhyeah.choolcheck.web.user.JwtSecurityConfig;
-import com.uhyeah.choolcheck.web.user.JwtTokenProvider;
+import com.uhyeah.choolcheck.web.user.jwt.CustomUserDetailsService;
+import com.uhyeah.choolcheck.web.user.jwt.JwtAuthenticationEntryPoint;
+import com.uhyeah.choolcheck.web.user.jwt.JwtSecurityConfig;
+import com.uhyeah.choolcheck.web.user.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;

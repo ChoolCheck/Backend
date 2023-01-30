@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.user;
+package com.uhyeah.choolcheck.web.user.jwt;
 
 import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.domain.repository.UserRepository;

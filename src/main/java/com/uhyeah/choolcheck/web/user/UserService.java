@@ -6,6 +6,7 @@ import com.uhyeah.choolcheck.web.exception.StatusCode;
 import com.uhyeah.choolcheck.web.user.dto.TokenResponseDto;
 import com.uhyeah.choolcheck.web.user.dto.UserLoginRequestDto;
 import com.uhyeah.choolcheck.web.user.dto.UserSaveRequestDto;
+import com.uhyeah.choolcheck.web.user.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
