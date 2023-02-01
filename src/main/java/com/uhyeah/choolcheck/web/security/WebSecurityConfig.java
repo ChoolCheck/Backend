@@ -32,7 +32,6 @@ public class WebSecurityConfig {
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilter(corsFilter)
                 .formLogin().disable()
                 .httpBasic().disable()
 

@@ -1,8 +1,6 @@
 package com.uhyeah.choolcheck.web.user;
 
-import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.web.exception.StatusCode;
-import com.uhyeah.choolcheck.web.exception.StatusResponseDto;
 import com.uhyeah.choolcheck.web.user.dto.TokenResponseDto;
 import com.uhyeah.choolcheck.web.user.dto.UserLoginRequestDto;
 import com.uhyeah.choolcheck.web.user.dto.UserSaveRequestDto;
