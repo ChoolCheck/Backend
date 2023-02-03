@@ -14,8 +14,6 @@ import javax.validation.constraints.NotNull;
 @Getter
 public class EmployeeSaveRequestDto {
 
-    private User user;
-
     @NotBlank(message = "이름은 필수항목입니다.")
     private String name;
 
@@ -27,7 +25,6 @@ public class EmployeeSaveRequestDto {
 
     public Employee toEntity(User user) {
         return Employee.builder()
-                .user(user)
                 .name(name)
                 .role(role)
                 .color(color)

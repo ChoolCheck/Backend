@@ -55,7 +55,7 @@ public class EmployeeService {
     @Transactional(readOnly = true)
     public List<EmployeeResponseDto> getEmployeeList(CustomUserDetails customUserDetails) {
 
-        return employeeRepository.findAll().stream()
+        return employeeRepository.findByUser(customUserDetails.getUser()).stream()
                 .map(EmployeeResponseDto::new)
                 .collect(Collectors.toList());
     }

@@ -1,5 +1,6 @@
 package com.uhyeah.choolcheck.web.exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +61,15 @@ public class GlobalExceptionHandler {
         StatusResponseDto exceptionResponseDto = new StatusResponseDto(StatusCode.UNAUTHORIZED_USER, "존재하지 않는 사용자 이메일입니다.");
 
         log.error("[exceptionHandle] BadCredentialsException = {}", exceptionResponseDto.toString());
+        return new ResponseEntity(exceptionResponseDto, StatusCode.UNAUTHORIZED_USER.getHttpStatus());
+    }
+
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity handleInvalidFormatException(InvalidFormatException e) {
+
+        StatusResponseDto exceptionResponseDto = new StatusResponseDto(StatusCode.INVALID_PARAMETER, e.getPathReference() + ": " + e.getValue().toString());
+
+        log.error("[exceptionHandle] InvalidFOrmatException = {}", exceptionResponseDto.toString());
         return new ResponseEntity(exceptionResponseDto, StatusCode.UNAUTHORIZED_USER.getHttpStatus());
     }
 }
