@@ -37,9 +37,9 @@ public class WebSecurityConfig {
                 .antMatchers("/user/**").permitAll()
                 .anyRequest().authenticated()
 
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+//                .and()
+//                .exceptionHandling()
+//                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
 
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider));

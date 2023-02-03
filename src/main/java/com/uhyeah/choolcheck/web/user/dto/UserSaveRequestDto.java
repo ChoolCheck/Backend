@@ -26,13 +26,6 @@ public class UserSaveRequestDto {
     @NotBlank(message = "상호명은 필수항목입니다.")
     private String storeName;
 
-    @Builder
-    public UserSaveRequestDto(String email, String password, String storeName) {
-        this.email = email;
-        this.password = password;
-        this.storeName = storeName;
-    }
-
     public User toEntity(PasswordEncoder passwordEncoder) {
         return User.builder()
                 .email(email)

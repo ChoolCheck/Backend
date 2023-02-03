@@ -33,4 +33,12 @@ public class User extends BaseTimeEntity{
         this.storeName = storeName;
         this.authority = authority;
     }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

@@ -16,8 +16,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @Component
@@ -27,7 +25,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 
         log.error("[JwtAuthenticationEntryPoint] request exception = {}",request.getAttribute("exception"));
-        log.error("[JwtAuthenticationEntryPoint] authException = {}", authException);
+
 
         if (authException.getClass().equals(BadCredentialsException.class)) {
             setResponse(response, new StatusResponseDto(StatusCode.UNAUTHORIZED_USER, "비밀번호가 일치하지 않습니다."));
@@ -36,8 +34,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         else if(authException.getClass().equals(UsernameNotFoundException.class)) {
             setResponse(response, new StatusResponseDto(StatusCode.UNAUTHORIZED_USER, "존재하지 않는 사용자 이메일입니다."));
         }
-
-
     }
 
     public void setResponse(HttpServletResponse response, StatusResponseDto statusResponseDto) throws IOException{
