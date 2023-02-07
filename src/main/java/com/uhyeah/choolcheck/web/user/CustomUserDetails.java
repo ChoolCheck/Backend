@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.user.jwt;
+package com.uhyeah.choolcheck.web.user;
 
 import com.uhyeah.choolcheck.domain.entity.User;
 import lombok.Getter;

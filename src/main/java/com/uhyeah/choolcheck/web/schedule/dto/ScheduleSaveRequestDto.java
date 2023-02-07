@@ -5,12 +5,9 @@ import com.uhyeah.choolcheck.domain.entity.Hours;
 import com.uhyeah.choolcheck.domain.entity.Schedule;
 import lombok.Getter;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Getter
 public class ScheduleSaveRequestDto {
@@ -18,13 +15,13 @@ public class ScheduleSaveRequestDto {
     private Long employee_id;
 
     @NotBlank(message = "날짜는 필수항목입니다.")
-    private Date date;
+    private LocalDate date;
 
     @NotBlank(message = "시작시간은 필수항목입니다.")
-    private Date startTime;
+    private LocalTime startTime;
 
     @NotBlank(message = "종료시간은 필수항목입니다.")
-    private Date endTime;
+    private LocalTime endTime;
 
     private Hours hours;
 

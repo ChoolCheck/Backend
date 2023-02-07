@@ -2,7 +2,7 @@ package com.uhyeah.choolcheck.web.hours;
 
 import com.uhyeah.choolcheck.web.hours.dto.HoursResponseDto;
 import com.uhyeah.choolcheck.web.hours.dto.HoursSaveRequestDto;
-import com.uhyeah.choolcheck.web.user.jwt.CustomUserDetails;
+import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -3,7 +3,7 @@ package com.uhyeah.choolcheck.web.employee;
 import com.uhyeah.choolcheck.web.employee.dto.EmployeeResponseDto;
 import com.uhyeah.choolcheck.web.employee.dto.EmployeeSaveRequestDto;
 import com.uhyeah.choolcheck.web.employee.dto.EmployeeUpdateRequestDto;
-import com.uhyeah.choolcheck.web.user.jwt.CustomUserDetails;
+import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +22,7 @@ public class EmployeeController {
 
     @PostMapping
     public ResponseEntity save(@Valid @RequestBody EmployeeSaveRequestDto employeeSaveRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
 
         employeeService.save(employeeSaveRequestDto, customUserDetails);
 

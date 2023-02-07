@@ -6,7 +6,7 @@ import com.uhyeah.choolcheck.web.exception.CustomException;
 import com.uhyeah.choolcheck.web.exception.StatusCode;
 import com.uhyeah.choolcheck.web.hours.dto.HoursResponseDto;
 import com.uhyeah.choolcheck.web.hours.dto.HoursSaveRequestDto;
-import com.uhyeah.choolcheck.web.user.jwt.CustomUserDetails;
+import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,12 @@ public class HoursService {
     public void save(HoursSaveRequestDto hoursSaveRequestDto, CustomUserDetails customUserDetails) {
 
         if (hoursRepository.existsByTitle(hoursSaveRequestDto.getTitle())) {
-            throw new CustomException(StatusCode.DUPLICATE_RESOURCE, "[Hours] title: "+ hoursSaveRequestDto.getTitle());
+            throw CustomException.builder()
+                    .statusCode(StatusCode.DUPLICATE_RESOURCE)
+                    .message("중복된 근무형태명 입니다.")
+                    .fieldName("title")
+                    .rejectValue(hoursSaveRequestDto.getTitle())
+                    .build();
         }
         hoursRepository.save(hoursSaveRequestDto.toEntity(customUserDetails.getUser()));
     }
@@ -33,7 +38,12 @@ public class HoursService {
     public void delete(Long id) {
 
         Hours hours = hoursRepository.findById(id)
-                        .orElseThrow(() -> new CustomException(StatusCode.RESOURCE_NOT_FOUND, "[Hours] id:" + id));
+                        .orElseThrow(() -> CustomException.builder()
+                                .statusCode(StatusCode.RESOURCE_NOT_FOUND)
+                                .message("존재하지 않는 근무형태입니다.")
+                                .fieldName("id")
+                                .rejectValue(id.toString())
+                                .build());
         hoursRepository.delete(hours);
     }
 
@@ -42,7 +52,12 @@ public class HoursService {
 
         return hoursRepository.findById(id)
                 .map(HoursResponseDto::new)
-                .orElseThrow(() -> new CustomException(StatusCode.RESOURCE_NOT_FOUND, "[Hours] id:" + id));
+                .orElseThrow(() -> CustomException.builder()
+                        .statusCode(StatusCode.RESOURCE_NOT_FOUND)
+                        .message("존재하지 않는 근무형태입니다.")
+                        .fieldName("id")
+                        .rejectValue(id.toString())
+                        .build());
     }
 
     @Transactional(readOnly = true)

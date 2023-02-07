@@ -1,18 +1,23 @@
 package com.uhyeah.choolcheck.web.exception;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 @Getter
-@RequiredArgsConstructor
-public class CustomException extends RuntimeException{
+public class CustomException extends RuntimeException {
 
     private final StatusCode statusCode;
 
-    public CustomException(StatusCode statusCode, String value) {
-        super(value);
+    private String message;
+
+    private String fieldName;
+
+    private String rejectValue;
+
+    @Builder
+    public CustomException(StatusCode statusCode, String message, String fieldName, String rejectValue) {
         this.statusCode = statusCode;
+        this.message = message;
+        this.fieldName = fieldName;
+        this.rejectValue = rejectValue;
     }
-
-
 }

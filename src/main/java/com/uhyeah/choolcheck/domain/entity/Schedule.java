@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Getter
 @NoArgsConstructor
@@ -20,21 +21,18 @@ public class Schedule {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-    @Temporal(TemporalType.DATE)
-    private Date date;
+    private LocalDate date;
 
-    @Temporal(TemporalType.TIME)
-    private Date startTime;
+    private LocalTime startTime;
 
-    @Temporal(TemporalType.TIME)
-    private Date endTime;
+    private LocalTime endTime;
 
     @ManyToOne
     @JoinColumn(name = "hours_id")
     private Hours hours;
 
     @Builder
-    public Schedule(Employee employee, Date date, Date startTime, Date endTime, Hours hours) {
+    public Schedule(Employee employee, LocalDate date, LocalTime startTime, LocalTime endTime, Hours hours) {
         this.employee = employee;
         this.date = date;
         this.startTime = startTime;

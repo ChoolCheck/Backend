@@ -6,7 +6,7 @@ import com.uhyeah.choolcheck.domain.entity.User;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
+import java.time.LocalTime;
 
 @Getter
 public class HoursSaveRequestDto {
@@ -14,11 +14,11 @@ public class HoursSaveRequestDto {
     @NotBlank(message = "이름은 필수항목입니다.")
     private String title;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
-    private Date startTime;
+    @JsonFormat(pattern = "HH:mm")
+    private LocalTime startTime;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
-    private Date endTime;
+    @JsonFormat(pattern = "HH:mm")
+    private LocalTime endTime;
 
     public Hours toEntity(User user) {
         return Hours.builder()

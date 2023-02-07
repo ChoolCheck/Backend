@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalTime;
 
 @Getter
 @NoArgsConstructor
@@ -22,14 +22,12 @@ public class Hours {
 
     private String title;
 
-    @Temporal(TemporalType.TIME)
-    private Date startTime;
+    private LocalTime startTime;
 
-    @Temporal(TemporalType.TIME)
-    private Date endTime;
+    private LocalTime endTime;
 
     @Builder
-    public Hours(User user, String title, Date startTime, Date endTime) {
+    public Hours(User user, String title, LocalTime startTime, LocalTime endTime) {
         this.user = user;
         this.title = title;
         this.startTime = startTime;

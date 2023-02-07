@@ -3,8 +3,10 @@ package com.uhyeah.choolcheck.domain.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor
@@ -15,15 +17,18 @@ public class Memo extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "employee_id")
-    private Employee employee;
+    private LocalDate date;
 
     private String content;
 
     @Builder
-    public Memo(Employee employee, String content) {
-        this.employee = employee;
+    public Memo(LocalDate date, String content) {
+        this.date = date;
+        this.content = content;
+    }
+
+    public void update(LocalDate date, String content) {
+        this.date = date;
         this.content = content;
     }
 }

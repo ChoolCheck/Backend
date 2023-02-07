@@ -7,20 +7,32 @@ import lombok.Getter;
 @Getter
 public class StatusResponseDto {
 
-    private String message;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String value;
+    private StatusCode statusCode;
 
-    public StatusResponseDto(StatusCode statusCode, String value) {
-        this.message = statusCode.getMessage();
-        this.value = value;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String message;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String fieldName;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String rejectValue;
+
+    @Builder
+    public StatusResponseDto(StatusCode statusCode, String message, String fieldName, String rejectValue) {
+        this.statusCode = statusCode;
+        this.message = message;
+        this.fieldName = fieldName;
+        this.rejectValue = rejectValue;
     }
 
     @Override
     public String toString() {
-        return "ExceptionResponseDto{" +
+        return "StatusResponseDto{" +
+                "statusCode=" + statusCode +
                 ", message='" + message + '\'' +
-                ", value='" + value + '\'' +
+                ", fieldName='" + fieldName + '\'' +
+                ", rejectValue='" + rejectValue + '\'' +
                 '}';
     }
 }

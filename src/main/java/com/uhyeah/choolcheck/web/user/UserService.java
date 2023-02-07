@@ -5,8 +5,8 @@ import com.uhyeah.choolcheck.domain.repository.UserRepository;
 import com.uhyeah.choolcheck.web.exception.CustomException;
 import com.uhyeah.choolcheck.web.exception.StatusCode;
 import com.uhyeah.choolcheck.web.user.dto.*;
-import com.uhyeah.choolcheck.web.user.jwt.CustomUserDetails;
 import com.uhyeah.choolcheck.web.user.jwt.JwtTokenProvider;
+import com.uhyeah.choolcheck.web.user.redis.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
 
 @RequiredArgsConstructor
 @Service
@@ -23,12 +25,18 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManagerBuilder managerBuilder;
+    private final RedisRepository redisRepository;
 
     @Transactional
     public void signup(UserSaveRequestDto userSaveRequestDto) {
 
         if (userRepository.existsByEmail(userSaveRequestDto.getEmail())) {
-            throw new CustomException(StatusCode.DUPLICATE_RESOURCE, "[User] email : "+userSaveRequestDto.getEmail());
+            throw CustomException.builder()
+                    .statusCode(StatusCode.DUPLICATE_RESOURCE)
+                    .message("중복된 이메일입니다.")
+                    .fieldName("email")
+                    .rejectValue(userSaveRequestDto.getEmail())
+                    .build();
         }
 
         userRepository.save(userSaveRequestDto.toEntity(passwordEncoder));
@@ -39,7 +47,22 @@ public class UserService {
 
         UsernamePasswordAuthenticationToken authenticationToken = userLoginRequestDto.toAuthentication();
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
-        return tokenProvider.generateTokenDto(authentication);
+        TokenResponseDto tokenResponseDto = tokenProvider.generateTokenDto(authentication);
+        redisRepository.setValues(userLoginRequestDto.getEmail(), tokenResponseDto.getRefreshToken(), Duration.ofDays(14));
+
+        return tokenResponseDto;
+    }
+
+    @Transactional(readOnly = true)
+    public TokenResponseDto reissue(String refreshToken) {
+
+        return tokenProvider.reissueAccessToken(refreshToken);
+    }
+
+
+    @Transactional(readOnly = true)
+    public void logout() {
+
     }
 
     @Transactional(readOnly = true)
