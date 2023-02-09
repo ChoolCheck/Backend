@@ -3,6 +3,7 @@ package com.uhyeah.choolcheck.web.security;
 import com.uhyeah.choolcheck.web.user.CustomUserDetailsService;
 import com.uhyeah.choolcheck.web.user.jwt.JwtSecurityConfig;
 import com.uhyeah.choolcheck.web.user.jwt.JwtTokenProvider;
+import com.uhyeah.choolcheck.web.user.redis.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -17,7 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final JwtTokenProvider tokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RedisRepository redisRepository;
     private final CustomUserDetailsService customUserDetailsService;
 
 
@@ -36,7 +38,7 @@ public class WebSecurityConfig {
                 .anyRequest().authenticated()
 
                 .and()
-                .apply(new JwtSecurityConfig(tokenProvider));
+                .apply(new JwtSecurityConfig(jwtTokenProvider, redisRepository));
 
         return http.build();
     }

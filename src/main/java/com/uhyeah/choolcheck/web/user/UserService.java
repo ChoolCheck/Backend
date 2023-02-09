@@ -8,6 +8,7 @@ import com.uhyeah.choolcheck.web.user.dto.*;
 import com.uhyeah.choolcheck.web.user.jwt.JwtTokenProvider;
 import com.uhyeah.choolcheck.web.user.redis.RedisRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -48,7 +49,7 @@ public class UserService {
         UsernamePasswordAuthenticationToken authenticationToken = userLoginRequestDto.toAuthentication();
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
         TokenResponseDto tokenResponseDto = tokenProvider.generateTokenDto(authentication);
-        redisRepository.setValues(userLoginRequestDto.getEmail(), tokenResponseDto.getRefreshToken(), Duration.ofDays(14));
+        redisRepository.setValues(userLoginRequestDto.getEmail(), tokenResponseDto.getRefreshToken(), Duration.ofMinutes(2));
 
         return tokenResponseDto;
     }
@@ -61,8 +62,12 @@ public class UserService {
 
 
     @Transactional(readOnly = true)
-    public void logout() {
+    public void logout(String accessToken, CustomUserDetails customUserDetails) {
 
+        redisRepository.deleteValues(customUserDetails.getUser().getEmail());
+
+        long expiration = tokenProvider.getExpiration(accessToken);
+        redisRepository.setValues(accessToken, "logout", Duration.ofMillis(expiration));
     }
 
     @Transactional(readOnly = true)

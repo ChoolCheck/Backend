@@ -3,6 +3,7 @@ package com.uhyeah.choolcheck.web.user;
 import com.uhyeah.choolcheck.web.user.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,6 +37,14 @@ public class UserController {
     public ResponseEntity<TokenResponseDto> reissue (@RequestHeader(value = "refreshToken") String refreshToken) {
 
         return new ResponseEntity(userService.reissue(refreshToken), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity logout(@RequestHeader(value = "accessToken") String accessToken, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        userService.logout(accessToken, customUserDetails);
+
+        return new ResponseEntity("로그아웃 성공.", HttpStatus.OK);
     }
 
 

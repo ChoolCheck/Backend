@@ -138,6 +138,14 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
+    public long getExpiration(String token) {
+
+        Claims claims = parseClaims(token);
+
+        long now = (new Date()).getTime();
+        return claims.getExpiration().getTime() - now;
+    }
+
 
     public boolean validateToken(String token) {
         try{
