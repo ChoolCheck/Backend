@@ -19,18 +19,14 @@ public class UserController {
 
     private final UserService userService;
 
-//    @PostMapping("/signup")
-//    public ResponseEntity signup(@Valid @RequestBody UserSaveRequestDto userSaveRequestDto) {
-//
-//        userService.signup(userSaveRequestDto);
-//
-//        return new ResponseEntity("회원가입 성공.", HttpStatus.CREATED);
-//    }
+    @PostMapping("/signup")
+    public ResponseEntity signup(@Valid @RequestBody UserSaveRequestDto userSaveRequestDto) {
 
-    @GetMapping("/signup")
-    public ResponseEntity signup() {
-        return new ResponseEntity("GET 요청 성공 Fuck you S3", HttpStatus.OK);
+        userService.signup(userSaveRequestDto);
+
+        return new ResponseEntity("회원가입 성공.", HttpStatus.CREATED);
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody UserLoginRequestDto userLoginRequestDto) {
