@@ -15,7 +15,7 @@ public enum Color {
     BLUE("A0C4FF"),
     PURPLE("BDB2FF"),
     PINK("FFC6FF"),
-    WHITE("FFFFFC");
+    GRAY("DEDEDE");
 
     private final String code;
 }

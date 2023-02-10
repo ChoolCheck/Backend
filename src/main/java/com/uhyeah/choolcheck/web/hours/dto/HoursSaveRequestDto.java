@@ -11,7 +11,7 @@ import java.time.LocalTime;
 @Getter
 public class HoursSaveRequestDto {
 
-    @NotBlank(message = "이름은 필수항목입니다.")
+    @NotBlank(message = "근무형태명은 필수항목입니다.")
     private String title;
 
     @JsonFormat(pattern = "HH:mm")
