@@ -16,6 +16,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedMethods("*")
+                .allowedHeaders("*")
                 .allowedOrigins("http://choolcheck-frontend.s3-website.ap-northeast-2.amazonaws.com");
     }
 }
