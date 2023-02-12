@@ -1,16 +1,16 @@
-package com.uhyeah.choolcheck.web.schedule;
+package com.uhyeah.choolcheck.web.work;
 
 import com.uhyeah.choolcheck.domain.entity.Employee;
 import com.uhyeah.choolcheck.domain.entity.Hours;
-import com.uhyeah.choolcheck.domain.entity.Schedule;
+import com.uhyeah.choolcheck.domain.entity.Work;
 import com.uhyeah.choolcheck.domain.repository.EmployeeRepository;
 import com.uhyeah.choolcheck.domain.repository.HoursRepository;
-import com.uhyeah.choolcheck.domain.repository.ScheduleRepository;
+import com.uhyeah.choolcheck.domain.repository.WorkRepository;
 import com.uhyeah.choolcheck.web.exception.CustomException;
 import com.uhyeah.choolcheck.web.exception.StatusCode;
-import com.uhyeah.choolcheck.web.schedule.dto.ScheduleResponseDto;
-import com.uhyeah.choolcheck.web.schedule.dto.ScheduleSaveRequestDto;
-import com.uhyeah.choolcheck.web.schedule.dto.ScheduleUpdateRequestDto;
+import com.uhyeah.choolcheck.web.work.dto.WorkResponseDto;
+import com.uhyeah.choolcheck.web.work.dto.WorkSaveRequestDto;
+import com.uhyeah.choolcheck.web.work.dto.WorkUpdateRequestDto;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,39 +21,39 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class ScheduleService {
+public class WorkService {
 
-    private final ScheduleRepository scheduleRepository;
+    private final WorkRepository workRepository;
     private final EmployeeRepository employeeRepository;
     private final HoursRepository hoursRepository;
 
     @Transactional
-    public void save(ScheduleSaveRequestDto scheduleSaveRequestDto) {
+    public void save(WorkSaveRequestDto workSaveRequestDto) {
 
-        Employee employee = employeeRepository.findById(scheduleSaveRequestDto.getEmployee_id())
+        Employee employee = employeeRepository.findById(workSaveRequestDto.getEmployee_id())
                 .orElseThrow(() -> CustomException.builder()
                         .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                         .message("존재하지 않는 직원입니다.")
                         .fieldName("employee_id")
-                        .rejectValue(scheduleSaveRequestDto.getEmployee_id().toString())
+                        .rejectValue(workSaveRequestDto.getEmployee_id().toString())
                         .build());
 
-        Hours hours = hoursRepository.findById(scheduleSaveRequestDto.getHours_id())
+        Hours hours = hoursRepository.findById(workSaveRequestDto.getHours_id())
                 .orElseThrow(() -> CustomException.builder()
                         .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                         .message("존재하지 않는 근무형태입니다.")
                         .fieldName("hours_id")
-                        .rejectValue(scheduleSaveRequestDto.getHours_id().toString())
+                        .rejectValue(workSaveRequestDto.getHours_id().toString())
                         .build());
 
-        scheduleRepository.save(scheduleSaveRequestDto.toEntity(employee, hours));
+        workRepository.save(workSaveRequestDto.toEntity(employee, hours));
 
     }
 
     @Transactional
-    public void update(Long id, ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
+    public void update(Long id, WorkUpdateRequestDto workUpdateRequestDto) {
 
-        Schedule schedule = scheduleRepository.findById(id)
+        Work work = workRepository.findById(id)
                 .orElseThrow(() -> CustomException.builder()
                         .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                         .message("존재하지 않는 스케줄입니다.")
@@ -61,37 +61,37 @@ public class ScheduleService {
                         .rejectValue(id.toString())
                         .build());
 
-        Employee employee = schedule.getEmployee();
-        Hours hours = schedule.getHours();
+        Employee employee = work.getEmployee();
+        Hours hours = work.getHours();
 
-        if (scheduleUpdateRequestDto.getEmployee_id().equals(employee.getId())) {
-            employee = employeeRepository.findById(scheduleUpdateRequestDto.getEmployee_id())
+        if (workUpdateRequestDto.getEmployee_id().equals(employee.getId())) {
+            employee = employeeRepository.findById(workUpdateRequestDto.getEmployee_id())
                     .orElseThrow(() -> CustomException.builder()
                             .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                             .message("존재하지 않는 직원입니다.")
                             .fieldName("employee_id")
-                            .rejectValue(scheduleUpdateRequestDto.getEmployee_id().toString())
+                            .rejectValue(workUpdateRequestDto.getEmployee_id().toString())
                             .build());
         }
 
-        if (scheduleUpdateRequestDto.getHours_id().equals(hours.getId())) {
-            hours = hoursRepository.findById(scheduleUpdateRequestDto.getHours_id())
+        if (workUpdateRequestDto.getHours_id().equals(hours.getId())) {
+            hours = hoursRepository.findById(workUpdateRequestDto.getHours_id())
                     .orElseThrow(() -> CustomException.builder()
                             .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                             .message("존재하지 않는 근무형태입니다.")
                             .fieldName("hours_id")
-                            .rejectValue(scheduleUpdateRequestDto.getHours_id().toString())
+                            .rejectValue(workUpdateRequestDto.getHours_id().toString())
                             .build());
         }
 
-        schedule.update(employee, hours, scheduleUpdateRequestDto.getDate(), scheduleUpdateRequestDto.getStartTime(), scheduleUpdateRequestDto.getEndTime());
+        work.update(employee, hours, workUpdateRequestDto.getDate(), workUpdateRequestDto.getStartTime(), workUpdateRequestDto.getEndTime());
 
     }
 
     @Transactional
     public void delete(Long id) {
 
-        Schedule schedule = scheduleRepository.findById(id)
+        Work work = workRepository.findById(id)
                 .orElseThrow(() -> CustomException.builder()
                         .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                         .message("존재하지 않는 스케줄입니다.")
@@ -99,14 +99,14 @@ public class ScheduleService {
                         .rejectValue(id.toString())
                         .build());
 
-        scheduleRepository.delete(schedule);
+        workRepository.delete(work);
 
     }
 
     @Transactional(readOnly = true)
-    public ScheduleResponseDto getSchedule(Long id) {
+    public WorkResponseDto getWork(Long id) {
 
-        Schedule schedule = scheduleRepository.findById(id)
+        Work work = workRepository.findById(id)
                 .orElseThrow(() -> CustomException.builder()
                         .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                         .message("존재하지 않는 스케줄입니다.")
@@ -114,11 +114,11 @@ public class ScheduleService {
                         .rejectValue(id.toString())
                         .build());
 
-        return new ScheduleResponseDto(schedule);
+        return new WorkResponseDto(work);
     }
 
     @Transactional(readOnly = true)
-    public List<ScheduleResponseDto> getScheduleByEmployee(Long employee_id) {
+    public List<WorkResponseDto> getWorkByEmployee(Long employee_id) {
 
         Employee employee = employeeRepository.findById(employee_id)
                 .orElseThrow(() -> CustomException.builder()
@@ -128,17 +128,17 @@ public class ScheduleService {
                         .rejectValue(employee_id.toString())
                         .build());
 
-        return scheduleRepository.findByEmployee(employee).stream()
-                .map(ScheduleResponseDto::new)
+        return workRepository.findByEmployee(employee).stream()
+                .map(WorkResponseDto::new)
                 .collect(Collectors.toList());
 
     }
 
     @Transactional(readOnly = true)
-    public List<ScheduleResponseDto> getScheduleList(CustomUserDetails customUserDetails) {
+    public List<WorkResponseDto> getWorkList(CustomUserDetails customUserDetails) {
 
-        return scheduleRepository.findByUser(customUserDetails.getUser()).stream()
-                .map(ScheduleResponseDto::new)
+        return workRepository.findByUser(customUserDetails.getUser()).stream()
+                .map(WorkResponseDto::new)
                 .collect(Collectors.toList());
     }
 }

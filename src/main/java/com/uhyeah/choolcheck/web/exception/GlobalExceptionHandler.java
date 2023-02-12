@@ -1,6 +1,10 @@
 package com.uhyeah.choolcheck.web.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -53,6 +57,42 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(statusResponseDtoList, statusCode.getHttpStatus());
     }
 
+
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity handleInvalidFormatException(InvalidFormatException e) {
+
+        StatusCode statusCode = StatusCode.INVALID_PARAMETER;
+
+        StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
+                .statusCode(statusCode)
+                .message(e.getTargetType().getName() + " 형식이 올바르지 않습니다.")
+                .fieldName(e.getPath().get(0).getFieldName())
+                .rejectValue(e.getValue().toString())
+                .build();
+
+        log.error("[exceptionHandle] InvalidFormatException = {}", exceptionResponseDto.toString());
+        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
+    }
+
+
+    //요청된 데이터와 정의된 데이터의 type이 다를 경우
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+
+        StatusCode statusCode = StatusCode.INVALID_PARAMETER;
+
+        StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
+                .statusCode(statusCode)
+                .message(e.getRequiredType().getName() + " 형식이 올바르지 않습니다.")
+                .fieldName(e.getName())
+                .rejectValue(e.getValue().toString())
+                .build();
+
+        log.error("[exceptionHandle] MethodArgumentTypeMismatchException = {}", exceptionResponseDto.toString());
+        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
+    }
+
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity handleBadCredentialsException(BadCredentialsException e) {
 
@@ -78,43 +118,50 @@ public class GlobalExceptionHandler {
                 .build();
 
         log.error("[exceptionHandle] BadCredentialsException = {}", exceptionResponseDto.toString());
-        return new ResponseEntity(exceptionResponseDto, StatusCode.UNAUTHORIZED_USER.getHttpStatus());
+        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
     }
 
-    @ExceptionHandler(InvalidFormatException.class)
-    public ResponseEntity handleInvalidFormatException(InvalidFormatException e) {
+//    @ExceptionHandler(ExpiredJwtException.class)
+//    public ResponseEntity handleJwtException(ExpiredJwtException e) {
+//
+//        StatusCode statusCode = StatusCode.UNAUTHORIZED_USER;
+//
+//        StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
+//                .statusCode(statusCode)
+//                .message("만료된 JWT토큰입니다.")
+//                .build();
+//
+//        log.error("[exceptionHandle] JwtException = {}", exceptionResponseDto.toString());
+//        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
+//
+//    }
 
-        StatusCode statusCode = StatusCode.INVALID_PARAMETER;
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity handleJwtException(JwtException e) {
+
+        StatusCode statusCode = StatusCode.UNAUTHORIZED_USER;
+        String message = "JWT토큰 오류입니다.";
+
+        if (e.equals(MalformedJwtException.class)) {
+            message = "올바르지 않은 형식의 JWT토큰입니다.";
+        }
+        if (e.equals(ExpiredJwtException.class)) {
+            message = "만료된 JWT토큰입니다.";
+        }
+        if (e.equals(UnsupportedJwtException.class)) {
+            message = "지원하지않는 JWT토큰입니다.";
+        }
 
         StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
                 .statusCode(statusCode)
-                .message(e.getTargetType().getName() + " 형식이 올바르지 않습니다.")
-                .fieldName(e.getPath().get(0).getFieldName())
-                .rejectValue(e.getValue().toString())
+                .message(message)
                 .build();
 
-        log.error("[exceptionHandle] InvalidFormatException = {}", exceptionResponseDto.toString());
-        return new ResponseEntity(exceptionResponseDto, StatusCode.INVALID_PARAMETER.getHttpStatus());
+        log.error("[exceptionHandle] JwtException = {}", exceptionResponseDto.toString());
+        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
+
     }
-
-
-    //요청된 데이터와 정의된 데이터의 type이 다를 경우
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-
-        StatusCode statusCode = StatusCode.INVALID_PARAMETER;
-
-        StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
-                .statusCode(statusCode)
-                .message(e.getRequiredType().getName() + " 형식이 올바르지 않습니다.")
-                .fieldName(e.getName())
-                .rejectValue(e.getValue().toString())
-                .build();
-
-        log.error("[exceptionHandle] MethodArgumentTypeMismatchException = {}", exceptionResponseDto.toString());
-        return new ResponseEntity(exceptionResponseDto, StatusCode.INVALID_PARAMETER.getHttpStatus());
-    }
-
 
 
 }

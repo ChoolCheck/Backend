@@ -32,11 +32,19 @@ public class Work {
     private Hours hours;
 
     @Builder
-    public Work(Employee employee, LocalDate date, LocalTime startTime, LocalTime endTime, Hours hours) {
+    public Work(Employee employee, Hours hours, LocalDate date, LocalTime startTime, LocalTime endTime) {
         this.employee = employee;
+        this.hours = hours;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    public void update(Employee employee, Hours hours, LocalDate date, LocalTime startTime, LocalTime endTime) {
+        this.employee = employee;
         this.hours = hours;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 }

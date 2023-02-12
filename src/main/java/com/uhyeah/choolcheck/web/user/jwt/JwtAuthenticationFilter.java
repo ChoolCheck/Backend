@@ -1,7 +1,16 @@
 package com.uhyeah.choolcheck.web.user.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uhyeah.choolcheck.web.exception.CustomException;
+import com.uhyeah.choolcheck.web.exception.StatusCode;
+import com.uhyeah.choolcheck.web.exception.StatusResponseDto;
 import com.uhyeah.choolcheck.web.user.redis.RedisRepository;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -13,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -35,7 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = resolveToken(request);
 
-        if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
+        if (token != null) {
+            jwtTokenProvider.validateToken(token);
 
             String isLogout = redisRepository.getValues(token);
 
@@ -44,6 +55,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
+
         filterChain.doFilter(request, response);
     }
+
+
 }

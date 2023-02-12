@@ -17,5 +17,6 @@ public class JwtSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurity
     public void configure(HttpSecurity builder) throws Exception {
         JwtAuthenticationFilter customFilter = new JwtAuthenticationFilter(jwtTokenProvider, redisRepository);
         builder.addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class);
+//        builder.addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
     }
 }

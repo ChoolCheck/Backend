@@ -25,6 +25,7 @@ public class EmployeeSaveRequestDto {
 
     public Employee toEntity(User user) {
         return Employee.builder()
+                .user(user)
                 .name(name)
                 .role(role)
                 .color(color)

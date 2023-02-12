@@ -24,6 +24,7 @@ public class EmployeeController {
     public ResponseEntity save(@Valid @RequestBody EmployeeSaveRequestDto employeeSaveRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
 
+        System.out.println(customUserDetails.getUser().getEmail());
         employeeService.save(employeeSaveRequestDto, customUserDetails);
 
         return new ResponseEntity("직원저장 성공.", HttpStatus.CREATED);

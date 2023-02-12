@@ -21,22 +21,31 @@ public class Schedule {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
+    @ManyToOne()
+    @JoinColumn(name = "hours_id")
+    private Hours hours;
+
     private LocalDate date;
 
     private LocalTime startTime;
 
     private LocalTime endTime;
 
-    @ManyToOne
-    @JoinColumn(name = "hours_id")
-    private Hours hours;
 
     @Builder
-    public Schedule(Employee employee, LocalDate date, LocalTime startTime, LocalTime endTime, Hours hours) {
+    public Schedule(Employee employee, Hours hours, LocalDate date, LocalTime startTime, LocalTime endTime) {
         this.employee = employee;
+        this.hours = hours;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    public void update(Employee employee, Hours hours, LocalDate date, LocalTime startTime, LocalTime endTime) {
+        this.employee = employee;
         this.hours = hours;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 }
