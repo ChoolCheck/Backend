@@ -23,7 +23,7 @@ public class ScheduleResponseDto {
 
     private long workTime;
 
-    private String backGroundColor;
+    private String backgroundColor;
 
 
     public ScheduleResponseDto(Schedule schedule) {
@@ -32,7 +32,7 @@ public class ScheduleResponseDto {
         this.name = schedule.getEmployee().getName();
         this.time = schedule.getStartTime().toString() + "-" + schedule.getEndTime().toString();
         this.workTime = Duration.between(schedule.getStartTime(), schedule.getEndTime()).toHours();
-        this.backGroundColor = schedule.getEmployee().getColor().getCode();
+        this.backgroundColor = schedule.getEmployee().getColor().getCode();
     }
 
 

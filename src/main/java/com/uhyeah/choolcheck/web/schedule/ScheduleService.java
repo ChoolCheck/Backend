@@ -8,15 +8,18 @@ import com.uhyeah.choolcheck.domain.repository.HoursRepository;
 import com.uhyeah.choolcheck.domain.repository.ScheduleRepository;
 import com.uhyeah.choolcheck.web.exception.CustomException;
 import com.uhyeah.choolcheck.web.exception.StatusCode;
-import com.uhyeah.choolcheck.web.schedule.dto.ScheduleResponseDto;
-import com.uhyeah.choolcheck.web.schedule.dto.ScheduleSaveRequestDto;
-import com.uhyeah.choolcheck.web.schedule.dto.ScheduleUpdateRequestDto;
+import com.uhyeah.choolcheck.web.schedule.dto.*;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -132,6 +135,36 @@ public class ScheduleService {
                 .map(ScheduleResponseDto::new)
                 .collect(Collectors.toList());
 
+    }
+
+    @Transactional(readOnly = true)
+    public List<ScheduleWeeklyResponseDto> getScheduleByWeek(CustomUserDetails customUserDetails) {
+
+        List<LocalDate> week = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+
+        for (int i = DayOfWeek.MONDAY.getValue(); i<= DayOfWeek.SUNDAY.getValue(); i++) {
+            week.add(now.with(DayOfWeek.of(i)));
+        }
+
+        List<Schedule> scheduleList = scheduleRepository.findByWeek(customUserDetails.getUser(), week.get(0), week.get(week.size()-1));
+
+        List<ScheduleWeeklyResponseDto> scheduleWeeklyResponseDtoList = new ArrayList<>();
+        for (LocalDate date : week) {
+
+            List<ScheduleWeekly> scheduleWeeklyList = scheduleList.stream()
+                    .filter(schedule -> schedule.getDate().isEqual(date))
+                    .map(ScheduleWeekly::new)
+                    .collect(Collectors.toList());
+
+            scheduleWeeklyResponseDtoList.add(ScheduleWeeklyResponseDto.builder()
+                            .day(date.getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN))
+                            .date(date)
+                            .schedule(scheduleWeeklyList)
+                            .build());
+        }
+
+        return scheduleWeeklyResponseDtoList;
     }
 
     @Transactional(readOnly = true)

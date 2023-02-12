@@ -3,6 +3,7 @@ package com.uhyeah.choolcheck.web.schedule;
 import com.uhyeah.choolcheck.web.schedule.dto.ScheduleResponseDto;
 import com.uhyeah.choolcheck.web.schedule.dto.ScheduleSaveRequestDto;
 import com.uhyeah.choolcheck.web.schedule.dto.ScheduleUpdateRequestDto;
+import com.uhyeah.choolcheck.web.schedule.dto.ScheduleWeeklyResponseDto;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -51,6 +52,12 @@ public class ScheduleController {
     public ResponseEntity<ScheduleResponseDto> getScheduleByEmployee(@PathVariable Long employee_id) {
 
         return new ResponseEntity(scheduleService.getScheduleByEmployee(employee_id), HttpStatus.OK);
+    }
+
+    @GetMapping("/week")
+    public ResponseEntity<List<ScheduleWeeklyResponseDto>> getScheduleByWeek(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        return new ResponseEntity(scheduleService.getScheduleByWeek(customUserDetails), HttpStatus.OK);
     }
 
     @GetMapping
