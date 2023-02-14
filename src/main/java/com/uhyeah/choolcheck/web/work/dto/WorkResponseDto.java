@@ -25,6 +25,8 @@ public class WorkResponseDto {
     private LocalTime endTime;
 
 
+
+
     public WorkResponseDto(Work work) {
         this.employee_id = work.getEmployee().getId();
         this.hours_id = work.getHours().getId();

@@ -8,16 +8,21 @@ import com.uhyeah.choolcheck.web.user.dto.*;
 import com.uhyeah.choolcheck.web.user.jwt.JwtTokenProvider;
 import com.uhyeah.choolcheck.web.user.redis.RedisRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -27,6 +32,7 @@ public class UserService {
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManagerBuilder managerBuilder;
     private final RedisRepository redisRepository;
+    private final JavaMailSender javaMailSender;
 
     @Transactional
     public void signup(UserSaveRequestDto userSaveRequestDto) {
@@ -84,6 +90,23 @@ public class UserService {
 
         User user = customUserDetails.getUser();
         user.setStoreName(userUpdateRequestDto.getStoreName());
+    }
+
+    public void sendUpdatePasswordEmail(CustomUserDetails customUserDetails) {
+
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+
+        try {
+            String receive = customUserDetails.getUsername();
+
+            simpleMailMessage.setTo(receive);
+            simpleMailMessage.setSubject("출첵 비밀번호 변경메일");
+            simpleMailMessage.setText("메일내용");
+
+            javaMailSender.send(simpleMailMessage);
+        } catch (Exception e) {
+            log.error(e.toString());
+        }
     }
 
     @Transactional

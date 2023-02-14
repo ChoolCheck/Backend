@@ -147,7 +147,7 @@ public class ScheduleService {
             week.add(now.with(DayOfWeek.of(i)));
         }
 
-        List<Schedule> scheduleList = scheduleRepository.findByWeek(customUserDetails.getUser(), week.get(0), week.get(week.size()-1));
+        List<Schedule> scheduleList = scheduleRepository.findByDateBetween(customUserDetails.getUser(), week.get(0), week.get(week.size()-1));
 
         List<ScheduleWeeklyResponseDto> scheduleWeeklyResponseDtoList = new ArrayList<>();
         for (LocalDate date : week) {

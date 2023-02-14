@@ -66,6 +66,13 @@ public class UserController {
         return new ResponseEntity("회원수정 성공.", HttpStatus.OK);
     }
 
+    @PostMapping("/password")
+    public ResponseEntity sendUpdatePasswordEmail(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        userService.sendUpdatePasswordEmail(customUserDetails);
+        return new ResponseEntity("비밀번호 변경 이메일전송 성공.", HttpStatus.CREATED);
+    }
+
 
     @PatchMapping("/password")
     public ResponseEntity updatePassword(@Valid @RequestBody UserPasswordUpdateRequestDto userPasswordUpdateRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {

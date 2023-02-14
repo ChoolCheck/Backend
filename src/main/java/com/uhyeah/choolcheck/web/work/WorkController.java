@@ -5,12 +5,14 @@ import com.uhyeah.choolcheck.web.work.dto.WorkSaveRequestDto;
 import com.uhyeah.choolcheck.web.work.dto.WorkUpdateRequestDto;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -48,9 +50,15 @@ public class WorkController {
     }
 
     @GetMapping("/employee/{employee_id}")
-    public ResponseEntity<WorkResponseDto> getWorkByEmployee(@PathVariable Long employee_id) {
+    public ResponseEntity<List<WorkResponseDto>> getWorkByEmployee(@PathVariable Long employee_id) {
 
         return new ResponseEntity(workService.getWorkByEmployee(employee_id), HttpStatus.OK);
+    }
+
+    @GetMapping("/date")
+    public ResponseEntity<List<WorkResponseDto>> getWorkByDate(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate start, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate end) {
+
+        return new ResponseEntity(workService.getWorkByDate(customUserDetails, start, end), HttpStatus.OK);
     }
 
     @GetMapping

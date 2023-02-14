@@ -4,6 +4,8 @@ import com.uhyeah.choolcheck.domain.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Getter
 public class UserResponseDto {
 
@@ -11,8 +13,11 @@ public class UserResponseDto {
 
     private String storeName;
 
+    private LocalDate createdDate;
+
     public UserResponseDto(User user) {
         this.email = user.getEmail();
         this.storeName = user.getStoreName();
+        this.createdDate = user.getCreatedDate();
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface WorkRepository extends JpaRepository<Work, Long> {
@@ -16,4 +17,7 @@ public interface WorkRepository extends JpaRepository<Work, Long> {
     List<Work> findByUser(@Param("user") User user);
 
     List<Work> findByEmployee(Employee employee);
+
+    @Query("SELECT w FROM Work w JOIN FETCH w.employee e WHERE e.user = :user AND w.date BETWEEN :start AND :end")
+    List<Work> findByDateBetween(@Param("user") User user, @Param("start") LocalDate start, @Param("end") LocalDate end);
 }

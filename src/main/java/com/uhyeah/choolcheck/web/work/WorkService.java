@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,7 +57,7 @@ public class WorkService {
         Work work = workRepository.findById(id)
                 .orElseThrow(() -> CustomException.builder()
                         .statusCode(StatusCode.RESOURCE_NOT_FOUND)
-                        .message("존재하지 않는 스케줄입니다.")
+                        .message("존재하지 않는 출근부입니다.")
                         .fieldName("id")
                         .rejectValue(id.toString())
                         .build());
@@ -94,7 +95,7 @@ public class WorkService {
         Work work = workRepository.findById(id)
                 .orElseThrow(() -> CustomException.builder()
                         .statusCode(StatusCode.RESOURCE_NOT_FOUND)
-                        .message("존재하지 않는 스케줄입니다.")
+                        .message("존재하지 않는 출근부입니다.")
                         .fieldName("id")
                         .rejectValue(id.toString())
                         .build());
@@ -109,7 +110,7 @@ public class WorkService {
         Work work = workRepository.findById(id)
                 .orElseThrow(() -> CustomException.builder()
                         .statusCode(StatusCode.RESOURCE_NOT_FOUND)
-                        .message("존재하지 않는 스케줄입니다.")
+                        .message("존재하지 않는 출근부입니다.")
                         .fieldName("id")
                         .rejectValue(id.toString())
                         .build());
@@ -132,6 +133,14 @@ public class WorkService {
                 .map(WorkResponseDto::new)
                 .collect(Collectors.toList());
 
+    }
+
+    @Transactional(readOnly = true)
+    public List<WorkResponseDto> getWorkByDate(CustomUserDetails customUserDetails, LocalDate start, LocalDate end) {
+
+        return workRepository.findByDateBetween(customUserDetails.getUser(), start, end).stream()
+                .map(WorkResponseDto::new)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

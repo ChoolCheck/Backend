@@ -34,6 +34,4 @@ public class ScheduleResponseDto {
         this.workTime = Duration.between(schedule.getStartTime(), schedule.getEndTime()).toHours();
         this.backgroundColor = schedule.getEmployee().getColor().getCode();
     }
-
-
 }

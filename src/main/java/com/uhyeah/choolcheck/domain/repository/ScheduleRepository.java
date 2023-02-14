@@ -18,5 +18,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findByEmployee(Employee employee);
 
     @Query("SELECT s FROM Schedule s JOIN FETCH s.employee e WHERE e.user = :user AND s.date BETWEEN :start AND :end")
-    List<Schedule> findByWeek(@Param("user") User user, @Param("start") LocalDate start, @Param("end") LocalDate end);
+    List<Schedule> findByDateBetween(@Param("user") User user, @Param("start") LocalDate start, @Param("end") LocalDate end);
 }
