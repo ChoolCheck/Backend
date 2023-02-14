@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         return userRepository.findByEmail(username)
-                .map(user -> new CustomUserDetails(user))
+                .map(CustomUserDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException(username + "없음"));
     }
 }

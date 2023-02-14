@@ -8,10 +8,10 @@ import com.uhyeah.choolcheck.web.user.dto.*;
 import com.uhyeah.choolcheck.web.user.jwt.JwtTokenProvider;
 import com.uhyeah.choolcheck.web.user.redis.RedisRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,12 +62,15 @@ public class UserService {
 
 
     @Transactional(readOnly = true)
-    public void logout(String accessToken, CustomUserDetails customUserDetails) {
+    public void logout(String bearerToken, CustomUserDetails customUserDetails) {
 
-        redisRepository.deleteValues(customUserDetails.getUser().getEmail());
-
+        String accessToken = tokenProvider.resolveToken(bearerToken);
         long expiration = tokenProvider.getExpiration(accessToken);
+        System.out.println(accessToken);
+        redisRepository.deleteValues(customUserDetails.getUser().getEmail());
         redisRepository.setValues(accessToken, "logout", Duration.ofMillis(expiration));
+
+        SecurityContextHolder.clearContext();
     }
 
     @Transactional(readOnly = true)

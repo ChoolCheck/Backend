@@ -41,9 +41,9 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity logout(@RequestHeader(value = "accessToken") String accessToken, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity logout(@RequestHeader(value = "Authorization") String bearerToken, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        userService.logout(accessToken, customUserDetails);
+        userService.logout(bearerToken, customUserDetails);
 
         return new ResponseEntity("로그아웃 성공.", HttpStatus.OK);
     }
