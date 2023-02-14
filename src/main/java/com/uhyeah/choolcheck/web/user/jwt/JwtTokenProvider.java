@@ -35,6 +35,7 @@ public class JwtTokenProvider {
     public static final String BEARER_PREFIX = "Bearer";
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;
+    private static final long MAIL_TOKEN_EXPIRE_TIME = 1000 * 60 * 10;
 
     private final Key key;
     private final CustomUserDetailsService customUserDetailsService;
@@ -76,6 +77,18 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
+                .setExpiration(tokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    public String issueMailToken(Authentication authentication) {
+
+        long now = (new Date()).getTime();
+        Date tokenExpiresIn = new Date(now + MAIL_TOKEN_EXPIRE_TIME);
+
+        return Jwts.builder()
+                .setSubject(authentication.getName())
                 .setExpiration(tokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();

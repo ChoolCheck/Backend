@@ -67,17 +67,17 @@ public class UserController {
     }
 
     @PostMapping("/password")
-    public ResponseEntity sendUpdatePasswordEmail(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity sendUpdatePasswordEmail(@RequestHeader(value = "Authorization") String bearerToken, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        userService.sendUpdatePasswordEmail(customUserDetails);
+        userService.sendUpdatePasswordEmail(bearerToken, customUserDetails);
         return new ResponseEntity("비밀번호 변경 이메일전송 성공.", HttpStatus.CREATED);
     }
 
 
     @PatchMapping("/password")
-    public ResponseEntity updatePassword(@Valid @RequestBody UserPasswordUpdateRequestDto userPasswordUpdateRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity updatePassword(@RequestHeader(value = "mailToken") String mailToken, @Valid @RequestBody UserPasswordUpdateRequestDto userPasswordUpdateRequestDto) {
 
-        userService.updatePassword(userPasswordUpdateRequestDto, customUserDetails);
+        userService.updatePassword(mailToken, userPasswordUpdateRequestDto);
 
         return new ResponseEntity("비밀번호 변경 성공.", HttpStatus.OK);
     }

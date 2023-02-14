@@ -32,7 +32,7 @@ public class UserService {
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManagerBuilder managerBuilder;
     private final RedisRepository redisRepository;
-    private final JavaMailSender javaMailSender;
+    private final MailService mailService;
 
     @Transactional
     public void signup(UserSaveRequestDto userSaveRequestDto) {
@@ -92,27 +92,33 @@ public class UserService {
         user.setStoreName(userUpdateRequestDto.getStoreName());
     }
 
-    public void sendUpdatePasswordEmail(CustomUserDetails customUserDetails) {
+    public void sendUpdatePasswordEmail(String bearerToken, CustomUserDetails customUserDetails) {
 
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        String accessToken = tokenProvider.resolveToken(bearerToken);
+        Authentication authentication = tokenProvider.getAuthentication(accessToken);
+        String mailToken = tokenProvider.issueMailToken(authentication);
 
-        try {
-            String receive = customUserDetails.getUsername();
+        String url = "http://choolcheck-frontend.s3-website.ap-northeast-2.amazonaws.com/user/password?token=" + mailToken;
 
-            simpleMailMessage.setTo(receive);
-            simpleMailMessage.setSubject("출첵 비밀번호 변경메일");
-            simpleMailMessage.setText("메일내용");
+        String receive = customUserDetails.getUsername();
+        String subject = "[출첵] 비밀번호 변경 메일입니다.";
+        String text = "비밀번호 변경 url : " + url;
 
-            javaMailSender.send(simpleMailMessage);
-        } catch (Exception e) {
-            log.error(e.toString());
-        }
+        mailService.sendMail(receive, subject, text);
     }
 
     @Transactional
-    public void updatePassword(UserPasswordUpdateRequestDto userPasswordUpdateRequestDto, CustomUserDetails customUserDetails) {
+    public void updatePassword(String mailToken, UserPasswordUpdateRequestDto userPasswordUpdateRequestDto) {
 
-        User user = customUserDetails.getUser();
+        String email = tokenProvider.parseClaims(mailToken).getSubject();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> CustomException.builder()
+                        .statusCode(StatusCode.RESOURCE_NOT_FOUND)
+                        .message("존재하지 않는 유저입니다.")
+                        .fieldName("email")
+                        .rejectValue(email)
+                        .build());
+
         user.setPassword(passwordEncoder.encode(userPasswordUpdateRequestDto.getPassword()));
     }
 
