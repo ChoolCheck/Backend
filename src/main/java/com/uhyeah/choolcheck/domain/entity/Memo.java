@@ -17,12 +17,17 @@ public class Memo extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     private LocalDate date;
 
     private String content;
 
     @Builder
-    public Memo(LocalDate date, String content) {
+    public Memo(LocalDate date, String content, User user) {
+        this.user = user;
         this.date = date;
         this.content = content;
     }

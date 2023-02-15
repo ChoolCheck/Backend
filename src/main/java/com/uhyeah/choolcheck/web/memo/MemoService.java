@@ -7,6 +7,7 @@ import com.uhyeah.choolcheck.web.exception.StatusCode;
 import com.uhyeah.choolcheck.web.memo.dto.MemoResponseDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoSaveRequestDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoUpdateRequestDto;
+import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +23,9 @@ public class MemoService {
     private final MemoRepository memoRepository;
 
     @Transactional
-    public void save(MemoSaveRequestDto memoSaveRequestDto) {
+    public void save(MemoSaveRequestDto memoSaveRequestDto, CustomUserDetails customUserDetails) {
 
-        memoRepository.save(memoSaveRequestDto.toEntity());
+        memoRepository.save(memoSaveRequestDto.toEntity(customUserDetails.getUser()));
     }
 
     @Transactional
@@ -69,9 +70,9 @@ public class MemoService {
     }
 
     @Transactional(readOnly = true)
-    public List<MemoResponseDto> getMemoByDate(LocalDate date) {
+    public List<MemoResponseDto> getMemoByDate(LocalDate date, CustomUserDetails customUserDetails) {
 
-        return memoRepository.findByDate(date).stream()
+        return memoRepository.findByUserAndDate(customUserDetails.getUser(), date).stream()
                 .map(MemoResponseDto::new)
                 .collect(Collectors.toList());
     }

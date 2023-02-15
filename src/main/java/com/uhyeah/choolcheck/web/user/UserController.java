@@ -35,9 +35,9 @@ public class UserController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<TokenResponseDto> reissue (@RequestHeader(value = "refreshToken") String refreshToken) {
+    public ResponseEntity<TokenResponseDto> reissue (@RequestHeader(value = "accessToken") String accessToken, @RequestHeader(value = "refreshToken") String refreshToken) {
 
-        return new ResponseEntity(userService.reissue(refreshToken), HttpStatus.CREATED);
+        return new ResponseEntity(userService.reissue(accessToken, refreshToken), HttpStatus.CREATED);
     }
 
     @PostMapping("/logout")
@@ -75,10 +75,9 @@ public class UserController {
 
 
     @PatchMapping("/password")
-    public ResponseEntity updatePassword(@RequestHeader(value = "mailToken") String mailToken, @Valid @RequestBody UserPasswordUpdateRequestDto userPasswordUpdateRequestDto) {
+    public ResponseEntity updatePassword(@Valid @RequestBody UserPasswordUpdateRequestDto userPasswordUpdateRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        userService.updatePassword(mailToken, userPasswordUpdateRequestDto);
-
+        userService.updatePassword(userPasswordUpdateRequestDto, customUserDetails);
         return new ResponseEntity("비밀번호 변경 성공.", HttpStatus.OK);
     }
 

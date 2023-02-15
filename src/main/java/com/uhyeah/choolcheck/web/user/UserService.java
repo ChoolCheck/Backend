@@ -61,9 +61,9 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public TokenResponseDto reissue(String refreshToken) {
+    public TokenResponseDto reissue(String accessToken, String refreshToken) {
 
-        return tokenProvider.reissueAccessToken(refreshToken);
+        return tokenProvider.reissueAccessToken(accessToken, refreshToken);
     }
 
 
@@ -108,9 +108,9 @@ public class UserService {
     }
 
     @Transactional
-    public void updatePassword(String mailToken, UserPasswordUpdateRequestDto userPasswordUpdateRequestDto) {
+    public void updatePassword(UserPasswordUpdateRequestDto userPasswordUpdateRequestDto, CustomUserDetails customUserDetails) {
 
-        String email = tokenProvider.parseClaims(mailToken).getSubject();
+        String email = customUserDetails.getUsername();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> CustomException.builder()
                         .statusCode(StatusCode.RESOURCE_NOT_FOUND)

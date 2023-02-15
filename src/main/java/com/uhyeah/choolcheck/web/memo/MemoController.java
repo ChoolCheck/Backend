@@ -3,10 +3,12 @@ package com.uhyeah.choolcheck.web.memo;
 import com.uhyeah.choolcheck.web.memo.dto.MemoResponseDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoSaveRequestDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoUpdateRequestDto;
+import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -20,9 +22,9 @@ public class MemoController {
     public final MemoService memoService;
 
     @PostMapping
-    public ResponseEntity save(@Valid @RequestBody MemoSaveRequestDto memoSaveRequestDto) {
+    public ResponseEntity save(@Valid @RequestBody MemoSaveRequestDto memoSaveRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        memoService.save(memoSaveRequestDto);
+        memoService.save(memoSaveRequestDto, customUserDetails);
 
         return new ResponseEntity("메모작성 성공.", HttpStatus.CREATED);
     }
@@ -50,9 +52,9 @@ public class MemoController {
     }
 
     @GetMapping()
-    public ResponseEntity<MemoResponseDto> getMemoByDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+    public ResponseEntity<MemoResponseDto> getMemoByDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return new ResponseEntity(memoService.getMemoByDate(date), HttpStatus.OK);
+        return new ResponseEntity(memoService.getMemoByDate(date, customUserDetails), HttpStatus.OK);
     }
 
 }

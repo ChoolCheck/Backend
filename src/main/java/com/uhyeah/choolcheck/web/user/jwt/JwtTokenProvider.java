@@ -70,13 +70,7 @@ public class JwtTokenProvider {
         long now = (new Date()).getTime();
         Date tokenExpiresIn = new Date(now + REFRESH_TOKEN_EXPIRE_TIME);
 
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
         return Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
                 .setExpiration(tokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
@@ -94,9 +88,9 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public TokenResponseDto reissueAccessToken(String refreshToken) {
+    public TokenResponseDto reissueAccessToken(String accessToken, String refreshToken) {
 
-        String email = parseClaims(refreshToken).getSubject();
+        String email = parseClaims(accessToken).getSubject();
         String refreshTokenRedis = redisRepository.getValues(email);
 
         if(refreshTokenRedis == null) {
@@ -114,11 +108,11 @@ public class JwtTokenProvider {
         }
 
         Authentication authentication = getAuthentication(refreshToken);
-        String accessToken = issueAccessToken(authentication);
+        String newAccessToken = issueAccessToken(authentication);
 
         return TokenResponseDto.builder()
                 .grantType(BEARER_TYPE)
-                .accessToken(accessToken)
+                .accessToken(newAccessToken)
                 .refreshToken(refreshToken)
                 .build();
 
@@ -177,7 +171,7 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             throw CustomException.builder()
                     .statusCode(StatusCode.UNAUTHORIZED_USER)
-                    .message("만료된 JWT 토큰입니다.")
+                    .message("expired")
                     .build();
 
         } catch (UnsupportedJwtException e) {
@@ -196,15 +190,17 @@ public class JwtTokenProvider {
 
     public Claims parseClaims(String accessToken) {
 
-        validateToken(accessToken);
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
-
+        try {
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
     }
 
 
     public String resolveToken(String bearerToken) {
 
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX) && bearerToken.length() > 6) {
             return bearerToken.substring(7);
         }
         return null;
