@@ -37,21 +37,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = jwtTokenProvider.resolveToken(request.getHeader(AUTHORIZATION_HEADER));
 
-        if (token == null) {
+        if (token != null) {
+            jwtTokenProvider.validateToken(token);
 
-            throw CustomException.builder()
-                    .statusCode(StatusCode.UNAUTHORIZED_USER)
-                    .message("사용자 인증정보가 없습니다.")
-                    .build();
-        }
+            String isLogout = redisRepository.getValues(token);
 
-        jwtTokenProvider.validateToken(token);
-
-        String isLogout = redisRepository.getValues(token);
-
-        if(isLogout == null) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            if(isLogout == null) {
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
         filterChain.doFilter(request, response);
     }

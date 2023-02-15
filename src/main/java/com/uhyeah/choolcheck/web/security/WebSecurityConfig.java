@@ -38,7 +38,7 @@ public class WebSecurityConfig {
                 .httpBasic().disable()
 
                 .authorizeRequests()
-                .antMatchers("/user/**").permitAll()
+                .antMatchers("/user/signup", "/user/login").permitAll()
                 .anyRequest().authenticated()
 
                 .and()

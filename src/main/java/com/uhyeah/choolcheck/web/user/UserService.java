@@ -98,7 +98,7 @@ public class UserService {
         Authentication authentication = tokenProvider.getAuthentication(accessToken);
         String mailToken = tokenProvider.issueMailToken(authentication);
 
-        String url = "http://choolcheck-frontend.s3-website.ap-northeast-2.amazonaws.com/user/password?token=" + mailToken;
+        final String url = "http://choolcheck-frontend.s3-website.ap-northeast-2.amazonaws.com/updatePassword?token=" + mailToken;
 
         String receive = customUserDetails.getUsername();
         String subject = "[출첵] 비밀번호 변경 메일입니다.";
