@@ -96,7 +96,7 @@ public class UserService {
 
         String accessToken = tokenProvider.resolveToken(bearerToken);
         Authentication authentication = tokenProvider.getAuthentication(accessToken);
-        String mailToken = tokenProvider.issueMailToken(authentication);
+        String mailToken = tokenProvider.issueAccessToken(authentication);
 
         final String url = "http://choolcheck-frontend.s3-website.ap-northeast-2.amazonaws.com/updatePassword?token=" + mailToken;
 
