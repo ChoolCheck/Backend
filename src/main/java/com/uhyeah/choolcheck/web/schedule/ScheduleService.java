@@ -41,13 +41,16 @@ public class ScheduleService {
                         .rejectValue(scheduleSaveRequestDto.getEmployee_id().toString())
                         .build());
 
-        Hours hours = hoursRepository.findById(scheduleSaveRequestDto.getHours_id())
-                .orElseThrow(() -> CustomException.builder()
-                        .statusCode(StatusCode.RESOURCE_NOT_FOUND)
-                        .message("존재하지 않는 근무형태입니다.")
-                        .fieldName("hours_id")
-                        .rejectValue(scheduleSaveRequestDto.getHours_id().toString())
-                        .build());
+        Hours hours = null;
+        if (scheduleSaveRequestDto.getHours_id() != null) {
+            hours = hoursRepository.findById(scheduleSaveRequestDto.getHours_id())
+                    .orElseThrow(() -> CustomException.builder()
+                            .statusCode(StatusCode.RESOURCE_NOT_FOUND)
+                            .message("존재하지 않는 근무형태입니다.")
+                            .fieldName("hours_id")
+                            .rejectValue(scheduleSaveRequestDto.getHours_id().toString())
+                            .build());
+        }
 
         scheduleRepository.save(scheduleSaveRequestDto.toEntity(employee, hours));
 
@@ -77,15 +80,18 @@ public class ScheduleService {
                             .build());
         }
 
-        if (scheduleUpdateRequestDto.getHours_id().equals(hours.getId())) {
-            hours = hoursRepository.findById(scheduleUpdateRequestDto.getHours_id())
-                    .orElseThrow(() -> CustomException.builder()
-                            .statusCode(StatusCode.RESOURCE_NOT_FOUND)
-                            .message("존재하지 않는 근무형태입니다.")
-                            .fieldName("hours_id")
-                            .rejectValue(scheduleUpdateRequestDto.getHours_id().toString())
-                            .build());
+        if (scheduleUpdateRequestDto.getHours_id() != null) {
+            if (scheduleUpdateRequestDto.getHours_id().equals(hours.getId())) {
+                hours = hoursRepository.findById(scheduleUpdateRequestDto.getHours_id())
+                        .orElseThrow(() -> CustomException.builder()
+                                .statusCode(StatusCode.RESOURCE_NOT_FOUND)
+                                .message("존재하지 않는 근무형태입니다.")
+                                .fieldName("hours_id")
+                                .rejectValue(scheduleUpdateRequestDto.getHours_id().toString())
+                                .build());
+            }
         }
+
 
         schedule.update(employee, hours, scheduleUpdateRequestDto.getDate(), scheduleUpdateRequestDto.getStartTime(), scheduleUpdateRequestDto.getEndTime());
 
@@ -121,6 +127,17 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
+    public List<ScheduleResponseDto> getScheduleByMonth(LocalDate date, CustomUserDetails customUserDetails) {
+
+        LocalDate start = date.withDayOfMonth(1);
+        LocalDate end = date.withDayOfMonth(date.lengthOfMonth());
+
+        return scheduleRepository.findByDateBetween(customUserDetails.getUser(), start, end).stream()
+                .map(ScheduleResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<ScheduleResponseDto> getScheduleByEmployee(Long employee_id) {
 
         Employee employee = employeeRepository.findById(employee_id)
@@ -138,33 +155,23 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<ScheduleWeeklyResponseDto> getScheduleByWeek(CustomUserDetails customUserDetails) {
+    public List<List<ScheduleResponseDto>> getScheduleByWeek(CustomUserDetails customUserDetails) {
 
-        List<LocalDate> week = new ArrayList<>();
         LocalDate now = LocalDate.now();
+        LocalDate start = now.with(DayOfWeek.MONDAY);
+        LocalDate end = now.with(DayOfWeek.SUNDAY);
 
-        for (int i = DayOfWeek.MONDAY.getValue(); i<= DayOfWeek.SUNDAY.getValue(); i++) {
-            week.add(now.with(DayOfWeek.of(i)));
-        }
-
-        List<Schedule> scheduleList = scheduleRepository.findByDateBetween(customUserDetails.getUser(), week.get(0), week.get(week.size()-1));
-
-        List<ScheduleWeeklyResponseDto> scheduleWeeklyResponseDtoList = new ArrayList<>();
-        for (LocalDate date : week) {
-
-            List<ScheduleWeekly> scheduleWeeklyList = scheduleList.stream()
+        List<Schedule> scheduleList = scheduleRepository.findByDateBetween(customUserDetails.getUser(), start, end);
+        List<List<ScheduleResponseDto>> scheduleResponseDtoList  = new ArrayList<>();
+        for (int i=0; i<7; i++) {
+            LocalDate date = start.plusDays(i);
+            scheduleResponseDtoList.add(scheduleList.stream()
                     .filter(schedule -> schedule.getDate().isEqual(date))
-                    .map(ScheduleWeekly::new)
-                    .collect(Collectors.toList());
-
-            scheduleWeeklyResponseDtoList.add(ScheduleWeeklyResponseDto.builder()
-                            .day(date.getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN))
-                            .date(date)
-                            .schedule(scheduleWeeklyList)
-                            .build());
+                    .map(ScheduleResponseDto::new)
+                    .collect(Collectors.toList()));
         }
 
-        return scheduleWeeklyResponseDtoList;
+        return scheduleResponseDtoList;
     }
 
     @Transactional(readOnly = true)

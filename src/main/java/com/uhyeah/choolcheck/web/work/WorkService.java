@@ -118,6 +118,18 @@ public class WorkService {
         return new WorkResponseDto(work);
     }
 
+
+    @Transactional(readOnly = true)
+    public List<WorkResponseDto> getWorkByMonth(LocalDate date, CustomUserDetails customUserDetails) {
+
+        LocalDate start = date.withDayOfMonth(1);
+        LocalDate end = date.withDayOfMonth(date.lengthOfMonth());
+
+        return workRepository.findByDateBetween(customUserDetails.getUser(), start, end).stream()
+                .map(WorkResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
     @Transactional(readOnly = true)
     public List<WorkResponseDto> getWorkByEmployee(Long employee_id) {
 

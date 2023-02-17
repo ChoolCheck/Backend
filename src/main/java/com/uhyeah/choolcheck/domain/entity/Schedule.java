@@ -21,7 +21,7 @@ public class Schedule {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hours_id")
     private Hours hours;
 

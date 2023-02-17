@@ -3,15 +3,16 @@ package com.uhyeah.choolcheck.web.schedule;
 import com.uhyeah.choolcheck.web.schedule.dto.ScheduleResponseDto;
 import com.uhyeah.choolcheck.web.schedule.dto.ScheduleSaveRequestDto;
 import com.uhyeah.choolcheck.web.schedule.dto.ScheduleUpdateRequestDto;
-import com.uhyeah.choolcheck.web.schedule.dto.ScheduleWeeklyResponseDto;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -48,6 +49,12 @@ public class ScheduleController {
         return new ResponseEntity(scheduleService.getSchedule(id), HttpStatus.OK);
     }
 
+    @GetMapping("/month")
+    public ResponseEntity<List<ScheduleResponseDto>> getScheduleByMonth(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        return new ResponseEntity(scheduleService.getScheduleByMonth(date, customUserDetails), HttpStatus.OK);
+    }
+
     @GetMapping("/employee/{employee_id}")
     public ResponseEntity<ScheduleResponseDto> getScheduleByEmployee(@PathVariable Long employee_id) {
 
@@ -55,7 +62,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/week")
-    public ResponseEntity<List<ScheduleWeeklyResponseDto>> getScheduleByWeek(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<List<List<ScheduleResponseDto>>> getScheduleByWeek(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         return new ResponseEntity(scheduleService.getScheduleByWeek(customUserDetails), HttpStatus.OK);
     }

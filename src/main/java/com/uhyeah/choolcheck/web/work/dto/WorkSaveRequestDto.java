@@ -17,7 +17,6 @@ public class WorkSaveRequestDto {
     @NotNull(message = "직원id는 필수항목입니다.")
     private Long employee_id;
 
-    @NotNull(message = "근무형태명은 필수항목입니다.")
     private Long hours_id;
 
     @JsonFormat(pattern = "yyyy-MM-dd")

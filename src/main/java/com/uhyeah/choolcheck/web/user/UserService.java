@@ -55,7 +55,7 @@ public class UserService {
         UsernamePasswordAuthenticationToken authenticationToken = userLoginRequestDto.toAuthentication();
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
         TokenResponseDto tokenResponseDto = tokenProvider.generateTokenDto(authentication);
-        redisRepository.setValues(userLoginRequestDto.getEmail(), tokenResponseDto.getRefreshToken(), Duration.ofMinutes(2));
+        redisRepository.setValues(userLoginRequestDto.getEmail(), tokenResponseDto.getRefreshToken(), Duration.ofDays(14));
 
         return tokenResponseDto;
     }

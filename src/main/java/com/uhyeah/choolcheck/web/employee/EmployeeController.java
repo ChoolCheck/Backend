@@ -23,8 +23,6 @@ public class EmployeeController {
     @PostMapping
     public ResponseEntity save(@Valid @RequestBody EmployeeSaveRequestDto employeeSaveRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-
-        System.out.println(customUserDetails.getUser().getEmail());
         employeeService.save(employeeSaveRequestDto, customUserDetails);
 
         return new ResponseEntity("직원저장 성공.", HttpStatus.CREATED);
@@ -39,9 +37,9 @@ public class EmployeeController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity update(@PathVariable Long id, @Valid @RequestBody EmployeeUpdateRequestDto employeeUpdateRequestDto) {
+    public ResponseEntity update(@PathVariable Long id, @Valid @RequestBody EmployeeUpdateRequestDto employeeUpdateRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        employeeService.update(id, employeeUpdateRequestDto);
+        employeeService.update(id, employeeUpdateRequestDto, customUserDetails);
 
         return new ResponseEntity("직원수정 성공.", HttpStatus.OK);
     }

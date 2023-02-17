@@ -1,6 +1,7 @@
 package com.uhyeah.choolcheck.web.employee;
 
 import com.uhyeah.choolcheck.domain.entity.Employee;
+import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.domain.enums.Color;
 import com.uhyeah.choolcheck.domain.repository.EmployeeRepository;
 import com.uhyeah.choolcheck.web.employee.dto.EmployeeResponseDto;
@@ -25,7 +26,7 @@ public class EmployeeService {
     @Transactional
     public void save(EmployeeSaveRequestDto employeeSaveRequestDto, CustomUserDetails customUserDetails) {
 
-        checkDuplication(employeeSaveRequestDto.getName(), employeeSaveRequestDto.getColor());
+        checkDuplication(employeeSaveRequestDto.getName(), employeeSaveRequestDto.getColor(), customUserDetails.getUser());
 
         employeeRepository.save(employeeSaveRequestDto.toEntity(customUserDetails.getUser()));
     }
@@ -44,7 +45,7 @@ public class EmployeeService {
     }
 
     @Transactional
-    public void update(Long id, EmployeeUpdateRequestDto employeeUpdateReqestDto) {
+    public void update(Long id, EmployeeUpdateRequestDto employeeUpdateReqestDto, CustomUserDetails customUserDetails) {
 
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> CustomException.builder()
@@ -54,8 +55,17 @@ public class EmployeeService {
                         .rejectValue(id.toString())
                         .build());
 
-        checkDuplication(employeeUpdateReqestDto.getName(), employeeUpdateReqestDto.getColor());
+        String name = employeeUpdateReqestDto.getName();
+        Color color = employeeUpdateReqestDto.getColor();
 
+        if(employeeRepository.existsByNameAndColorAndUserAndIdNot(name, color, customUserDetails.getUser(), id)) {
+            throw CustomException.builder()
+                    .statusCode(StatusCode.DUPLICATE_RESOURCE)
+                    .message("중복된 직원-색상 입니다.")
+                    .fieldName("name-color")
+                    .rejectValue(name + "-" + color)
+                    .build();
+        }
         employee.update(employeeUpdateReqestDto.getName(), employeeUpdateReqestDto.getRole(), employeeUpdateReqestDto.getColor());
     }
 
@@ -82,8 +92,8 @@ public class EmployeeService {
     }
 
 
-    private void checkDuplication(String name, Color color) {
-        if(employeeRepository.existsByNameAndColor(name, color)) {
+    private void checkDuplication(String name, Color color, User user) {
+        if(employeeRepository.existsByNameAndColorAndUser(name, color, user)) {
             throw CustomException.builder()
                     .statusCode(StatusCode.DUPLICATE_RESOURCE)
                     .message("중복된 직원-색상 입니다.")

@@ -49,6 +49,12 @@ public class WorkController {
         return new ResponseEntity(workService.getWork(id), HttpStatus.OK);
     }
 
+    @GetMapping("/month")
+    public ResponseEntity<List<WorkResponseDto>> getWorkByMonth(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        return new ResponseEntity(workService.getWorkByMonth(date, customUserDetails), HttpStatus.OK);
+    }
+
     @GetMapping("/employee/{employee_id}")
     public ResponseEntity<List<WorkResponseDto>> getWorkByEmployee(@PathVariable Long employee_id) {
 

@@ -33,8 +33,8 @@ public class JwtTokenProvider {
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "bearer";
     public static final String BEARER_PREFIX = "Bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 2;
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;
     private static final long MAIL_TOKEN_EXPIRE_TIME = 1000 * 60 * 10;
 
     private final Key key;
@@ -90,8 +90,8 @@ public class JwtTokenProvider {
 
     public TokenResponseDto reissueAccessToken(String accessToken, String refreshToken) {
 
-        String email = parseClaims(accessToken).getSubject();
-        String refreshTokenRedis = redisRepository.getValues(email);
+        Claims claims = parseClaims(accessToken);
+        String refreshTokenRedis = redisRepository.getValues(claims.getSubject());
 
         if(refreshTokenRedis == null) {
             throw CustomException.builder()
@@ -107,7 +107,7 @@ public class JwtTokenProvider {
                     .build();
         }
 
-        Authentication authentication = getAuthentication(refreshToken);
+        Authentication authentication = getAuthentication(accessToken);
         String newAccessToken = issueAccessToken(authentication);
 
         return TokenResponseDto.builder()

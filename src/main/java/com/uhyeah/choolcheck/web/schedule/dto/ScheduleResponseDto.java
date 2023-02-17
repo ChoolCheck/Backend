@@ -1,37 +1,40 @@
 package com.uhyeah.choolcheck.web.schedule.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.uhyeah.choolcheck.domain.entity.Hours;
 import com.uhyeah.choolcheck.domain.entity.Schedule;
+import com.uhyeah.choolcheck.domain.enums.Color;
 import lombok.Getter;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.format.TextStyle;
-import java.util.Locale;
+import java.time.LocalTime;
 
 @Getter
 public class ScheduleResponseDto {
 
-    private String day;
-
-    @JsonFormat(pattern = "yyyy/MM/dd")
-    private LocalDate date;
-
     private String name;
 
-    private String time;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate date;
 
-    private long workTime;
+    private LocalTime startTime;
 
-    private String backgroundColor;
+    private LocalTime endTime;
+
+    private String hours;
+
+    private Color color;
 
 
     public ScheduleResponseDto(Schedule schedule) {
-        this.day = schedule.getDate().getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN);
-        this.date = schedule.getDate();
         this.name = schedule.getEmployee().getName();
-        this.time = schedule.getStartTime().toString() + "-" + schedule.getEndTime().toString();
-        this.workTime = Duration.between(schedule.getStartTime(), schedule.getEndTime()).toHours();
-        this.backgroundColor = schedule.getEmployee().getColor().getCode();
+        this.date = schedule.getDate();
+        this.startTime = schedule.getStartTime();
+        this.endTime = schedule.getEndTime();
+        this.color = schedule.getEmployee().getColor();
+
+        if (schedule.getHours() != null) {
+            this.hours = schedule.getHours().getTitle();
+        }
     }
 }
