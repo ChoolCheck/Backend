@@ -20,4 +20,7 @@ public interface WorkRepository extends JpaRepository<Work, Long> {
 
     @Query("SELECT w FROM Work w JOIN FETCH w.employee e WHERE e.user = :user AND w.date BETWEEN :start AND :end")
     List<Work> findByDateBetween(@Param("user") User user, @Param("start") LocalDate start, @Param("end") LocalDate end);
+
+//    @Query("SELECT w.employee, w.startTime, w.endTime FROM Work w JOIN FETCH w.employee e WHERE e.user = :user AND w.date BETWEEN :start AND :end")
+//    List<Work> findStatisticsByDateBetween(@Param("user") User user, @Param("start") LocalDate start, @Param("end") LocalDate end);
 }
