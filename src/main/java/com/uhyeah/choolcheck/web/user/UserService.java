@@ -88,8 +88,17 @@ public class UserService {
     @Transactional
     public void update(UserUpdateRequestDto userUpdateRequestDto, CustomUserDetails customUserDetails) {
 
-        User user = customUserDetails.getUser();
+
+        User user = userRepository.findById(customUserDetails.getUser().getId())
+                        .orElseThrow(() -> CustomException.builder()
+                                .statusCode(StatusCode.RESOURCE_NOT_FOUND)
+                                .message("존재하지 않는 유저입니다.")
+                                .fieldName("email")
+                                .rejectValue(customUserDetails.getUsername())
+                                .build());
+
         user.setStoreName(userUpdateRequestDto.getStoreName());
+
     }
 
     public void sendUpdatePasswordEmail(String bearerToken, CustomUserDetails customUserDetails) {

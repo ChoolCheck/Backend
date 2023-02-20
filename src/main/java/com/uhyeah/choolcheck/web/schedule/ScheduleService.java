@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,15 @@ public class ScheduleService {
 
     @Transactional
     public void save(ScheduleSaveRequestDto scheduleSaveRequestDto) {
+
+        if (!checkTime(scheduleSaveRequestDto.getStartTime(), scheduleSaveRequestDto.getEndTime())) {
+            throw CustomException.builder()
+                    .statusCode(StatusCode.INVALID_PARAMETER)
+                    .message("퇴근시간이 출근시간보다 빠릅니다.")
+                    .fieldName("startTime, endTime")
+                    .rejectValue(scheduleSaveRequestDto.getStartTime() + ", " + scheduleSaveRequestDto.getEndTime())
+                    .build();
+        }
 
         Employee employee = employeeRepository.findById(scheduleSaveRequestDto.getEmployee_id())
                 .orElseThrow(() -> CustomException.builder()
@@ -69,6 +79,15 @@ public class ScheduleService {
 
         Employee employee = schedule.getEmployee();
         Hours hours = schedule.getHours();
+
+        if (!checkTime(scheduleUpdateRequestDto.getStartTime(), scheduleUpdateRequestDto.getEndTime())) {
+            throw CustomException.builder()
+                    .statusCode(StatusCode.INVALID_PARAMETER)
+                    .message("퇴근시간이 출근시간보다 빠릅니다.")
+                    .fieldName("startTime, endTime")
+                    .rejectValue(scheduleUpdateRequestDto.getStartTime() + ", " + scheduleUpdateRequestDto.getEndTime())
+                    .build();
+        }
 
         if (scheduleUpdateRequestDto.getEmployee_id().equals(employee.getId())) {
             employee = employeeRepository.findById(scheduleUpdateRequestDto.getEmployee_id())
@@ -180,5 +199,10 @@ public class ScheduleService {
         return scheduleRepository.findByUser(customUserDetails.getUser()).stream()
                 .map(ScheduleResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+    public boolean checkTime(LocalTime startTime, LocalTime endTime) {
+
+        return !startTime.isAfter(endTime);
     }
 }
