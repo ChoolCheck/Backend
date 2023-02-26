@@ -1,7 +1,6 @@
 package com.uhyeah.choolcheck.web.schedule.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.uhyeah.choolcheck.domain.entity.Hours;
 import com.uhyeah.choolcheck.domain.entity.Schedule;
 import com.uhyeah.choolcheck.domain.enums.Color;
 import lombok.Getter;
@@ -11,6 +10,8 @@ import java.time.LocalTime;
 
 @Getter
 public class ScheduleResponseDto {
+
+    private Long id;
 
     private String name;
 
@@ -27,6 +28,7 @@ public class ScheduleResponseDto {
 
 
     public ScheduleResponseDto(Schedule schedule) {
+        this.id = schedule.getId();
         this.name = schedule.getEmployee().getName();
         this.date = schedule.getDate();
         this.startTime = schedule.getStartTime();

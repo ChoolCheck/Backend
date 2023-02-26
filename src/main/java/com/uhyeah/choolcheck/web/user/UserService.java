@@ -87,8 +87,7 @@ public class UserService {
 
     @Transactional
     public void update(UserUpdateRequestDto userUpdateRequestDto, CustomUserDetails customUserDetails) {
-
-
+        
         User user = userRepository.findById(customUserDetails.getUser().getId())
                         .orElseThrow(() -> CustomException.builder()
                                 .statusCode(StatusCode.RESOURCE_NOT_FOUND)
