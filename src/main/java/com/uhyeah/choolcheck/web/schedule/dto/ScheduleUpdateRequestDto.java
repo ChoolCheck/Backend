@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Getter
 public class ScheduleUpdateRequestDto {
 
-    @NotBlank(message = "직원id는 필수항목입니다.")
+    @NotNull(message = "직원id는 필수항목입니다.")
     private Long employee_id;
 
     private Long hours_id;
