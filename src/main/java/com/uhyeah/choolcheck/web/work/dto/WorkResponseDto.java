@@ -12,6 +12,8 @@ import java.time.LocalTime;
 @Getter
 public class WorkResponseDto {
 
+    private Long id;
+
     private String name;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -27,6 +29,7 @@ public class WorkResponseDto {
 
 
     public WorkResponseDto(Work work) {
+        this.id = work.getId();
         this.name = work.getEmployee().getName();
         this.date = work.getDate();
         this.startTime = work.getStartTime();
