@@ -4,6 +4,7 @@ import com.uhyeah.choolcheck.web.schedule.dto.ScheduleResponseDto;
 import com.uhyeah.choolcheck.web.schedule.dto.ScheduleSaveRequestDto;
 import com.uhyeah.choolcheck.web.schedule.dto.ScheduleUpdateRequestDto;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;
+import com.uhyeah.choolcheck.web.work.dto.WorkResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,12 @@ public class ScheduleController {
     public ResponseEntity<ScheduleResponseDto> getSchedule(@PathVariable Long id) {
 
         return new ResponseEntity(scheduleService.getSchedule(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/date")
+    public ResponseEntity<List<ScheduleResponseDto>> getScheduleByDate(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate start, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate end) {
+
+        return new ResponseEntity(scheduleService.getScheduleByDate(customUserDetails, start, end), HttpStatus.OK);
     }
 
     @GetMapping("/month")

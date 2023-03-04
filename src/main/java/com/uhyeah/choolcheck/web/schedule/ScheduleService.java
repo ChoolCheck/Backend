@@ -10,6 +10,7 @@ import com.uhyeah.choolcheck.web.exception.CustomException;
 import com.uhyeah.choolcheck.web.exception.StatusCode;
 import com.uhyeah.choolcheck.web.schedule.dto.*;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;
+import com.uhyeah.choolcheck.web.work.dto.WorkResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,8 +111,6 @@ public class ScheduleService {
                                 .build());
             }
         }
-
-
         schedule.update(employee, hours, scheduleUpdateRequestDto.getDate(), scheduleUpdateRequestDto.getStartTime(), scheduleUpdateRequestDto.getEndTime());
 
     }
@@ -170,7 +169,6 @@ public class ScheduleService {
         return scheduleRepository.findByEmployee(employee).stream()
                 .map(ScheduleResponseDto::new)
                 .collect(Collectors.toList());
-
     }
 
     @Transactional(readOnly = true)
@@ -191,6 +189,14 @@ public class ScheduleService {
         }
 
         return scheduleResponseDtoList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ScheduleResponseDto> getScheduleByDate(CustomUserDetails customUserDetails, LocalDate start, LocalDate end) {
+
+        return scheduleRepository.findByDateBetween(customUserDetails.getUser(), start, end).stream()
+                .map(ScheduleResponseDto::new)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
