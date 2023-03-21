@@ -3,7 +3,6 @@ package com.uhyeah.choolcheck.web.schedule.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
