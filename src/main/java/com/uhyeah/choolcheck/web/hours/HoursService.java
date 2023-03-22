@@ -23,16 +23,11 @@ public class HoursService {
     @Transactional
     public void save(HoursSaveRequestDto hoursSaveRequestDto, CustomUserDetails customUserDetails) {
 
-        if (hoursRepository.existsByTitleandUser(hoursSaveRequestDto.getTitle()), customUserDetails.getUser()) {
-            throw CustomException.builder()
-                    .statusCode(StatusCode.DUPLICATE_RESOURCE)
-                    .message("중복된 근무형태명 입니다.")
-                    .fieldName("title")
-                    .rejectValue(hoursSaveRequestDto.getTitle())
-                    .build();
-        }
+        checkDuplication(hoursSaveRequestDto, customUserDetails);
         hoursRepository.save(hoursSaveRequestDto.toEntity(customUserDetails.getUser()));
     }
+
+
 
     @Transactional
     public void delete(Long id) {
@@ -66,5 +61,16 @@ public class HoursService {
         return hoursRepository.findByUser(customUserDetails.getUser()).stream()
                 .map(HoursResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+    private void checkDuplication(HoursSaveRequestDto hoursSaveRequestDto, CustomUserDetails customUserDetails) {
+        if (hoursRepository.existsByTitleAndUser(hoursSaveRequestDto.getTitle(), customUserDetails.getUser())) {
+            throw CustomException.builder()
+                    .statusCode(StatusCode.DUPLICATE_RESOURCE)
+                    .message("중복된 근무형태명 입니다.")
+                    .fieldName("title")
+                    .rejectValue(hoursSaveRequestDto.getTitle())
+                    .build();
+        }
     }
 }
