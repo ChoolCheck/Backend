@@ -32,14 +32,14 @@ public class WorkService {
     @Transactional
     public void save(WorkSaveRequestDto workSaveRequestDto) {
 
-        if (!checkTime(workSaveRequestDto.getStartTime(), workSaveRequestDto.getEndTime())) {
-            throw CustomException.builder()
-                    .statusCode(StatusCode.INVALID_PARAMETER)
-                    .message("퇴근시간이 출근시간보다 빠릅니다.")
-                    .fieldName("startTime, endTime")
-                    .rejectValue(workSaveRequestDto.getStartTime() + ", " + workSaveRequestDto.getEndTime())
-                    .build();
-        }
+//        if (!checkTime(workSaveRequestDto.getStartTime(), workSaveRequestDto.getEndTime())) {
+//            throw CustomException.builder()
+//                    .statusCode(StatusCode.INVALID_PARAMETER)
+//                    .message("퇴근시간이 출근시간보다 빠릅니다.")
+//                    .fieldName("startTime, endTime")
+//                    .rejectValue(workSaveRequestDto.getStartTime() + ", " + workSaveRequestDto.getEndTime())
+//                    .build();
+//        }
 
         Employee employee = employeeRepository.findById(workSaveRequestDto.getEmployee_id())
                 .orElseThrow(() -> CustomException.builder()
@@ -68,14 +68,14 @@ public class WorkService {
     @Transactional
     public void update(Long id, WorkUpdateRequestDto workUpdateRequestDto) {
 
-        if (!checkTime(workUpdateRequestDto.getStartTime(), workUpdateRequestDto.getEndTime())) {
-            throw CustomException.builder()
-                    .statusCode(StatusCode.INVALID_PARAMETER)
-                    .message("퇴근시간이 출근시간보다 빠릅니다.")
-                    .fieldName("startTime, endTime")
-                    .rejectValue(workUpdateRequestDto.getStartTime() + ", " + workUpdateRequestDto.getEndTime())
-                    .build();
-        }
+//        if (!checkTime(workUpdateRequestDto.getStartTime(), workUpdateRequestDto.getEndTime())) {
+//            throw CustomException.builder()
+//                    .statusCode(StatusCode.INVALID_PARAMETER)
+//                    .message("퇴근시간이 출근시간보다 빠릅니다.")
+//                    .fieldName("startTime, endTime")
+//                    .rejectValue(workUpdateRequestDto.getStartTime() + ", " + workUpdateRequestDto.getEndTime())
+//                    .build();
+//        }
 
         Work work = workRepository.findById(id)
                 .orElseThrow(() -> CustomException.builder()
@@ -187,9 +187,9 @@ public class WorkService {
                 .collect(Collectors.toList());
     }
 
-    public boolean checkTime(LocalTime startTime, LocalTime endTime) {
-
-        return !startTime.isAfter(endTime);
-    }
+//    public boolean checkTime(LocalTime startTime, LocalTime endTime) {
+//
+//        return !startTime.isAfter(endTime);
+//    }
 }
 
