@@ -23,7 +23,7 @@ public class HoursService {
     @Transactional
     public void save(HoursSaveRequestDto hoursSaveRequestDto, CustomUserDetails customUserDetails) {
 
-        if (hoursRepository.existsByTitle(hoursSaveRequestDto.getTitle())) {
+        if (hoursRepository.existsByTitleandUser(hoursSaveRequestDto.getTitle()), customUserDetails.getUser()) {
             throw CustomException.builder()
                     .statusCode(StatusCode.DUPLICATE_RESOURCE)
                     .message("중복된 근무형태명 입니다.")

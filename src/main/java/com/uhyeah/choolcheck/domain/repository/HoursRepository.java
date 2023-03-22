@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface HoursRepository extends JpaRepository<Hours, Long> {
 
-    boolean existsByTitle(String title);
+    boolean existsByTitleAndUser(String title, User user);
 
     List<Hours> findByUser(User user);
 

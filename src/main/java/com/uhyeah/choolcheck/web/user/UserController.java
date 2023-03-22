@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,6 +28,13 @@ public class UserController {
         return new ResponseEntity("회원가입 성공.", HttpStatus.CREATED);
     }
 
+    @PostMapping("/email")
+    public ResponseEntity verifyEmail(@RequestParam @Email(message = "이메일 형식이 맞지 않습니다.") String email) {
+
+        userService.verifyEmail(email);
+
+        return new ResponseEntity("이메일 인증메일 전송 성공.", HttpStatus.OK);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody UserLoginRequestDto userLoginRequestDto) {

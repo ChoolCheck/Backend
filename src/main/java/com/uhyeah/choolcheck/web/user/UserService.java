@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.Random;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -46,9 +47,30 @@ public class UserService {
                     .build();
         }
 
+        String email = redisRepository.getValues(userSaveRequestDto.getCode());
+        if (!email.equals(userSaveRequestDto.getEmail())) {
+            throw CustomException.builder()
+                    .statusCode(StatusCode.INVALID_PARAMETER)
+                    .message("일지하지 않는 인증번호입니다..")
+                    .fieldName("code")
+                    .rejectValue(userSaveRequestDto.getCode())
+                    .build();
+        }
+
         userRepository.save(userSaveRequestDto.toEntity(passwordEncoder));
     }
 
+    public void verifyEmail(String email) {
+
+        String code = createCode();
+        String receive = email;
+        String subject = "[출첵] 이메일 인증 메일입니다.";
+        String text = "인증번호 : " + code;
+
+        redisRepository.setValues(code, email);
+
+        mailService.sendMail(receive, subject, text);
+    }
     @Transactional(readOnly = true)
     public TokenResponseDto login(UserLoginRequestDto userLoginRequestDto) {
 
@@ -134,5 +156,16 @@ public class UserService {
     public void delete(CustomUserDetails customUserDetails) {
 
         userRepository.delete(customUserDetails.getUser());
+    }
+
+    public static String createCode() {
+
+        StringBuffer code = new StringBuffer();
+        Random random = new Random();
+
+        for (int i=0; i<6; i++) {
+            code.append((random.nextInt(10)));
+        }
+        return code.toString();
     }
 }
