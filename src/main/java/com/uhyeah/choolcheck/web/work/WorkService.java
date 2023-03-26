@@ -8,18 +8,21 @@ import com.uhyeah.choolcheck.domain.repository.HoursRepository;
 import com.uhyeah.choolcheck.domain.repository.WorkRepository;
 import com.uhyeah.choolcheck.web.exception.CustomException;
 import com.uhyeah.choolcheck.web.exception.StatusCode;
+import com.uhyeah.choolcheck.web.schedule.dto.ScheduleResponseDto;
 import com.uhyeah.choolcheck.web.work.dto.WorkResponseDto;
 import com.uhyeah.choolcheck.web.work.dto.WorkSaveRequestDto;
 import com.uhyeah.choolcheck.web.work.dto.WorkUpdateRequestDto;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @RequiredArgsConstructor
 @Service
@@ -31,15 +34,6 @@ public class WorkService {
 
     @Transactional
     public void save(WorkSaveRequestDto workSaveRequestDto) {
-
-//        if (!checkTime(workSaveRequestDto.getStartTime(), workSaveRequestDto.getEndTime())) {
-//            throw CustomException.builder()
-//                    .statusCode(StatusCode.INVALID_PARAMETER)
-//                    .message("퇴근시간이 출근시간보다 빠릅니다.")
-//                    .fieldName("startTime, endTime")
-//                    .rejectValue(workSaveRequestDto.getStartTime() + ", " + workSaveRequestDto.getEndTime())
-//                    .build();
-//        }
 
         Employee employee = employeeRepository.findById(workSaveRequestDto.getEmployee_id())
                 .orElseThrow(() -> CustomException.builder()
@@ -68,15 +62,6 @@ public class WorkService {
     @Transactional
     public void update(Long id, WorkUpdateRequestDto workUpdateRequestDto) {
 
-//        if (!checkTime(workUpdateRequestDto.getStartTime(), workUpdateRequestDto.getEndTime())) {
-//            throw CustomException.builder()
-//                    .statusCode(StatusCode.INVALID_PARAMETER)
-//                    .message("퇴근시간이 출근시간보다 빠릅니다.")
-//                    .fieldName("startTime, endTime")
-//                    .rejectValue(workUpdateRequestDto.getStartTime() + ", " + workUpdateRequestDto.getEndTime())
-//                    .build();
-//        }
-
         Work work = workRepository.findById(id)
                 .orElseThrow(() -> CustomException.builder()
                         .statusCode(StatusCode.RESOURCE_NOT_FOUND)
@@ -88,7 +73,7 @@ public class WorkService {
         Employee employee = work.getEmployee();
         Hours hours = work.getHours();
 
-        if (workUpdateRequestDto.getEmployee_id().equals(employee.getId())) {
+        if (!workUpdateRequestDto.getEmployee_id().equals(employee.getId())) {
             employee = employeeRepository.findById(workUpdateRequestDto.getEmployee_id())
                     .orElseThrow(() -> CustomException.builder()
                             .statusCode(StatusCode.RESOURCE_NOT_FOUND)
@@ -99,15 +84,13 @@ public class WorkService {
         }
 
         if (workUpdateRequestDto.getHours_id() != null) {
-            if (workUpdateRequestDto.getHours_id().equals(hours.getId())) {
-                hours = hoursRepository.findById(workUpdateRequestDto.getHours_id())
-                        .orElseThrow(() -> CustomException.builder()
-                                .statusCode(StatusCode.RESOURCE_NOT_FOUND)
-                                .message("존재하지 않는 근무형태입니다.")
-                                .fieldName("hours_id")
-                                .rejectValue(workUpdateRequestDto.getHours_id().toString())
-                                .build());
-            }
+            hours = hoursRepository.findById(workUpdateRequestDto.getHours_id())
+                    .orElseThrow(() -> CustomException.builder()
+                            .statusCode(StatusCode.RESOURCE_NOT_FOUND)
+                            .message("존재하지 않는 근무형태입니다.")
+                            .fieldName("hours_id")
+                            .rejectValue(workUpdateRequestDto.getHours_id().toString())
+                            .build());
         }
         work.update(employee, hours, workUpdateRequestDto.getDate(), workUpdateRequestDto.getStartTime(), workUpdateRequestDto.getEndTime());
 
@@ -144,7 +127,14 @@ public class WorkService {
 
 
     @Transactional(readOnly = true)
-    public List<WorkResponseDto> getWorkByMonth(LocalDate date, CustomUserDetails customUserDetails) {
+    public Page<WorkResponseDto> getWorkList(CustomUserDetails customUserDetails, Long employeeId, String period, Pageable pageable) {
+
+        return workRepository.findByUserAndPeriodAndEmployee(customUserDetails.getUser(), period, employeeId, pageable)
+                .map(WorkResponseDto::new);
+    }
+
+    @Transactional(readOnly = true)
+    public List<WorkResponseDto> getWorkCalendar(LocalDate date, CustomUserDetails customUserDetails) {
 
         LocalDate start = date.withDayOfMonth(1);
         LocalDate end = date.withDayOfMonth(date.lengthOfMonth());
@@ -154,42 +144,5 @@ public class WorkService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public List<WorkResponseDto> getWorkByEmployee(Long employee_id) {
-
-        Employee employee = employeeRepository.findById(employee_id)
-                .orElseThrow(() -> CustomException.builder()
-                        .statusCode(StatusCode.RESOURCE_NOT_FOUND)
-                        .message("존재하지 않는 직원입니다.")
-                        .fieldName("employee_id")
-                        .rejectValue(employee_id.toString())
-                        .build());
-
-        return workRepository.findByEmployee(employee).stream()
-                .map(WorkResponseDto::new)
-                .collect(Collectors.toList());
-
-    }
-
-    @Transactional(readOnly = true)
-    public List<WorkResponseDto> getWorkByDate(CustomUserDetails customUserDetails, LocalDate start, LocalDate end) {
-
-        return workRepository.findByDateBetween(customUserDetails.getUser(), start, end).stream()
-                .map(WorkResponseDto::new)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<WorkResponseDto> getWorkList(CustomUserDetails customUserDetails) {
-
-        return workRepository.findByUser(customUserDetails.getUser()).stream()
-                .map(WorkResponseDto::new)
-                .collect(Collectors.toList());
-    }
-
-//    public boolean checkTime(LocalTime startTime, LocalTime endTime) {
-//
-//        return !startTime.isAfter(endTime);
-//    }
 }
 

@@ -1,6 +1,7 @@
 package com.uhyeah.choolcheck.web.schedule.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.querydsl.core.annotations.QueryProjection;
 import com.uhyeah.choolcheck.domain.entity.Schedule;
 import com.uhyeah.choolcheck.domain.enums.Color;
 import lombok.Getter;
@@ -26,7 +27,7 @@ public class ScheduleResponseDto {
 
     private Color color;
 
-
+    @QueryProjection
     public ScheduleResponseDto(Schedule schedule) {
         this.id = schedule.getId();
         this.name = schedule.getEmployee().getName();

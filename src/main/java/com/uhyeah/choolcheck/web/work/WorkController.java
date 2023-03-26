@@ -5,6 +5,10 @@ import com.uhyeah.choolcheck.web.work.dto.WorkSaveRequestDto;
 import com.uhyeah.choolcheck.web.work.dto.WorkUpdateRequestDto;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,29 +53,16 @@ public class WorkController {
         return new ResponseEntity(workService.getWork(id), HttpStatus.OK);
     }
 
+    @GetMapping()
+    public ResponseEntity<Page<WorkResponseDto>> getWorkList(@RequestParam(name = "employee", required = false) Long employeeId, @RequestParam(required = false) String period, @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                             @PageableDefault(size=10) Pageable pageable) {
+
+        return new ResponseEntity(workService.getWorkList(customUserDetails, employeeId, period, pageable), HttpStatus.OK);
+    }
+
     @GetMapping("/month")
-    public ResponseEntity<List<WorkResponseDto>> getWorkByMonth(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<List<WorkResponseDto>> getWorkCalendar(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return new ResponseEntity(workService.getWorkByMonth(date, customUserDetails), HttpStatus.OK);
+        return new ResponseEntity(workService.getWorkCalendar(date, customUserDetails), HttpStatus.OK);
     }
-
-    @GetMapping("/employee/{employee_id}")
-    public ResponseEntity<List<WorkResponseDto>> getWorkByEmployee(@PathVariable Long employee_id) {
-
-        return new ResponseEntity(workService.getWorkByEmployee(employee_id), HttpStatus.OK);
-    }
-
-    @GetMapping("/date")
-    public ResponseEntity<List<WorkResponseDto>> getWorkByDate(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate start, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate end) {
-
-        return new ResponseEntity(workService.getWorkByDate(customUserDetails, start, end), HttpStatus.OK);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<WorkResponseDto>> getWorkList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-
-        return new ResponseEntity(workService.getWorkList(customUserDetails), HttpStatus.OK);
-    }
-
-
 }

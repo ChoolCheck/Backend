@@ -1,6 +1,7 @@
 package com.uhyeah.choolcheck.web.work.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.querydsl.core.annotations.QueryProjection;
 import com.uhyeah.choolcheck.domain.entity.Work;
 import com.uhyeah.choolcheck.domain.entity.Work;
 import com.uhyeah.choolcheck.domain.enums.Color;
@@ -27,7 +28,7 @@ public class WorkResponseDto {
 
     private Color color;
 
-
+    @QueryProjection
     public WorkResponseDto(Work work) {
         this.id = work.getId();
         this.name = work.getEmployee().getName();
@@ -40,4 +41,6 @@ public class WorkResponseDto {
             this.hours = work.getHours().getTitle();
         }
     }
+
+
 }

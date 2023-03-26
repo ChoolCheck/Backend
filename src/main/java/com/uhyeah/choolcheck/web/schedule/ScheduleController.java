@@ -4,8 +4,10 @@ import com.uhyeah.choolcheck.web.schedule.dto.ScheduleResponseDto;
 import com.uhyeah.choolcheck.web.schedule.dto.ScheduleSaveRequestDto;
 import com.uhyeah.choolcheck.web.schedule.dto.ScheduleUpdateRequestDto;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;
-import com.uhyeah.choolcheck.web.work.dto.WorkResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,24 +51,7 @@ public class ScheduleController {
 
         return new ResponseEntity(scheduleService.getSchedule(id), HttpStatus.OK);
     }
-
-    @GetMapping("/date")
-    public ResponseEntity<List<ScheduleResponseDto>> getScheduleByDate(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate start, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate end) {
-
-        return new ResponseEntity(scheduleService.getScheduleByDate(customUserDetails, start, end), HttpStatus.OK);
-    }
-
-    @GetMapping("/month")
-    public ResponseEntity<List<ScheduleResponseDto>> getScheduleByMonth(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-
-        return new ResponseEntity(scheduleService.getScheduleByMonth(date, customUserDetails), HttpStatus.OK);
-    }
-
-    @GetMapping("/employee/{employee_id}")
-    public ResponseEntity<ScheduleResponseDto> getScheduleByEmployee(@PathVariable Long employee_id) {
-
-        return new ResponseEntity(scheduleService.getScheduleByEmployee(employee_id), HttpStatus.OK);
-    }
+    
 
     @GetMapping("/week")
     public ResponseEntity<List<List<ScheduleResponseDto>>> getScheduleByWeek(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -74,11 +59,17 @@ public class ScheduleController {
         return new ResponseEntity(scheduleService.getScheduleByWeek(customUserDetails), HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ScheduleResponseDto>> getScheduleList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    @GetMapping()
+    public ResponseEntity<Page<ScheduleResponseDto>> getScheduleList(@RequestParam(name = "employee", required = false) Long employeeId, @RequestParam(required = false) String period, @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                             @PageableDefault(size=10) Pageable pageable) {
 
-        return new ResponseEntity(scheduleService.getScheduleList(customUserDetails), HttpStatus.OK);
+        return new ResponseEntity(scheduleService.getScheduleList(customUserDetails, employeeId, period, pageable), HttpStatus.OK);
     }
 
+    @GetMapping("/month")
+    public ResponseEntity<List<ScheduleResponseDto>> getScheduleCalendar(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        return new ResponseEntity(scheduleService.getScheduleCalendar(date, customUserDetails), HttpStatus.OK);
+    }
 
 }

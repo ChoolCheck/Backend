@@ -37,5 +37,32 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+	implementation 'com.querydsl:querydsl-jpa'
+	implementation 'com.querydsl:querydsl-apt'
+	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa"
+	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+
+}
+
+def querydslSrcDir = 'src/main/generated'
+sourceSets {
+	main {
+		java {
+			srcDirs += [ querydslSrcDir ]
+		}
+	}
+}
+
+compileJava {
+	options.compilerArgs << '-Aquerydsl.generatedAnnotationClass=javax.annotation.Generated'
+}
+
+tasks.withType(JavaCompile) {
+	options.generatedSourceOutputDirectory = file(querydslSrcDir)
+}
+
+clean {
+	delete file(querydslSrcDir)
 }
 
