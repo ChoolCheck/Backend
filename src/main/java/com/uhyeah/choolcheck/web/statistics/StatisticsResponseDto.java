@@ -24,4 +24,6 @@ public class StatisticsResponseDto {
         this.color = color;
         this.totalTime = totalTime;
     }
+
+    
 }

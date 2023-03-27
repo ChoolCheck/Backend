@@ -1,19 +1,10 @@
-package com.uhyeah.choolcheck.web.user.jwt;
+package com.uhyeah.choolcheck.global.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uhyeah.choolcheck.web.exception.CustomException;
-import com.uhyeah.choolcheck.web.exception.StatusCode;
-import com.uhyeah.choolcheck.web.exception.StatusResponseDto;
-import com.uhyeah.choolcheck.web.user.redis.RedisRepository;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -21,9 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,7 +21,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisRepository redisRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
 
     @Override
@@ -43,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null) {
             jwtTokenProvider.validateToken(token);
 
-            String isLogout = redisRepository.getValues(token);
+            String isLogout = redisTemplate.opsForValue().get(token);
 
             if(isLogout == null) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);

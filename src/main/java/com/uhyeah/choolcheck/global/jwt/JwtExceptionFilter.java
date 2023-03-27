@@ -1,13 +1,9 @@
-package com.uhyeah.choolcheck.web.user.jwt;
+package com.uhyeah.choolcheck.global.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uhyeah.choolcheck.web.exception.CustomException;
-import com.uhyeah.choolcheck.web.exception.StatusCode;
-import com.uhyeah.choolcheck.web.exception.StatusResponseDto;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import com.uhyeah.choolcheck.global.exception.CustomException;
+import com.uhyeah.choolcheck.global.exception.StatusCode;
+import com.uhyeah.choolcheck.global.exception.StatusResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;

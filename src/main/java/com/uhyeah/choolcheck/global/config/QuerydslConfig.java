@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.security;
+package com.uhyeah.choolcheck.global.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.context.annotation.Bean;

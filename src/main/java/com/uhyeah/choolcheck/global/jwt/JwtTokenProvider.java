@@ -1,15 +1,15 @@
-package com.uhyeah.choolcheck.web.user.jwt;
+package com.uhyeah.choolcheck.global.jwt;
 
-import com.uhyeah.choolcheck.web.exception.CustomException;
-import com.uhyeah.choolcheck.web.exception.StatusCode;
+import com.uhyeah.choolcheck.global.exception.CustomException;
+import com.uhyeah.choolcheck.global.exception.StatusCode;
 import com.uhyeah.choolcheck.web.user.CustomUserDetailsService;
 import com.uhyeah.choolcheck.web.user.dto.TokenResponseDto;
-import com.uhyeah.choolcheck.web.user.redis.RedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,12 +18,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,13 +37,13 @@ public class JwtTokenProvider {
 
     private final Key key;
     private final CustomUserDetailsService customUserDetailsService;
-    private final RedisRepository redisRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, CustomUserDetailsService customUserDetailsService, RedisRepository redisRepository) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, CustomUserDetailsService customUserDetailsService, RedisTemplate redisTemplate) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.customUserDetailsService = customUserDetailsService;
-        this.redisRepository = redisRepository;
+        this.redisTemplate = redisTemplate;
     }
 
     public String issueAccessToken(Authentication authentication) {
@@ -91,7 +89,7 @@ public class JwtTokenProvider {
     public TokenResponseDto reissueAccessToken(String accessToken, String refreshToken) {
 
         Claims claims = parseClaims(accessToken);
-        String refreshTokenRedis = redisRepository.getValues(claims.getSubject());
+        String refreshTokenRedis = redisTemplate.opsForValue().get(claims.getSubject());
 
         if(refreshTokenRedis == null) {
             throw CustomException.builder()

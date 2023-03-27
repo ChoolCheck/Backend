@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.user.redis;
+package com.uhyeah.choolcheck.global.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;

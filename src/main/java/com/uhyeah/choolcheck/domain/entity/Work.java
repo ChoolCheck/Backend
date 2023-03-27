@@ -11,7 +11,7 @@ import java.time.LocalTime;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Work {
+public class Work{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,15 +21,15 @@ public class Work {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hours_id")
+    private Hours hours;
+
     private LocalDate date;
 
     private LocalTime startTime;
 
     private LocalTime endTime;
-
-    @ManyToOne
-    @JoinColumn(name = "hours_id")
-    private Hours hours;
 
     @Builder
     public Work(Employee employee, Hours hours, LocalDate date, LocalTime startTime, LocalTime endTime) {

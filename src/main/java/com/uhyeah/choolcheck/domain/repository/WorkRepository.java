@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 
-public interface WorkRepository extends JpaRepository<Work, Long>, QueryDSLRepository<Page<Work>> {
+public interface WorkRepository extends JpaRepository<Work, Long>, QueryDSLRepository<Work> {
 
     @Query("SELECT w FROM Work w JOIN FETCH w.employee e WHERE e.user = :user AND w.date BETWEEN :start AND :end")
     List<Work> findByDateBetween(@Param("user") User user, @Param("start") LocalDate start, @Param("end") LocalDate end);

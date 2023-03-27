@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.exception;
+package com.uhyeah.choolcheck.global.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import io.jsonwebtoken.ExpiredJwtException;

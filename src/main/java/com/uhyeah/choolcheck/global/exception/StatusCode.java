@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.exception;
+package com.uhyeah.choolcheck.global.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

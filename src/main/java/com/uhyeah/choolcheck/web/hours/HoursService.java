@@ -2,8 +2,8 @@ package com.uhyeah.choolcheck.web.hours;
 
 import com.uhyeah.choolcheck.domain.entity.Hours;
 import com.uhyeah.choolcheck.domain.repository.HoursRepository;
-import com.uhyeah.choolcheck.web.exception.CustomException;
-import com.uhyeah.choolcheck.web.exception.StatusCode;
+import com.uhyeah.choolcheck.global.exception.CustomException;
+import com.uhyeah.choolcheck.global.exception.StatusCode;
 import com.uhyeah.choolcheck.web.hours.dto.HoursResponseDto;
 import com.uhyeah.choolcheck.web.hours.dto.HoursSaveRequestDto;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;

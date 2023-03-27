@@ -2,8 +2,8 @@ package com.uhyeah.choolcheck.web.memo;
 
 import com.uhyeah.choolcheck.domain.entity.Memo;
 import com.uhyeah.choolcheck.domain.repository.MemoRepository;
-import com.uhyeah.choolcheck.web.exception.CustomException;
-import com.uhyeah.choolcheck.web.exception.StatusCode;
+import com.uhyeah.choolcheck.global.exception.CustomException;
+import com.uhyeah.choolcheck.global.exception.StatusCode;
 import com.uhyeah.choolcheck.web.memo.dto.MemoResponseDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoSaveRequestDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoUpdateRequestDto;
