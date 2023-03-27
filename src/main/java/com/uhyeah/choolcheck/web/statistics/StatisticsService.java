@@ -24,11 +24,11 @@ public class StatisticsService {
     private final EmployeeRepository employeeRepository;
 
     @Transactional(readOnly = true)
-    public List<StatisticsResponseDto> getStatistics(LocalDate start, LocalDate end, CustomUserDetails customUserDetails) {
+    public List<StatisticsResponseDto> getStatistics(LocalDate dateFrom, LocalDate dateTo, CustomUserDetails customUserDetails) {
 
         List<Employee> employeeList = employeeRepository.findByUser(customUserDetails.getUser());
 
-        List<Work> workList = workRepository.findByDateBetween(customUserDetails.getUser(), start, end);
+        List<Work> workList = workRepository.findByDateBetween(customUserDetails.getUser(), dateFrom, dateTo);
         List<StatisticsResponseDto> statisticsResponseDtoList = new ArrayList<>();
 
         for (Employee employee : employeeList) {

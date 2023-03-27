@@ -1,13 +1,14 @@
 package com.uhyeah.choolcheck.domain.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.uhyeah.choolcheck.domain.entity.Schedule;
 import com.uhyeah.choolcheck.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -17,39 +18,40 @@ import static com.uhyeah.choolcheck.domain.entity.QSchedule.schedule;
 
 @Repository
 @RequiredArgsConstructor
-public class ScheduleRepositoryImpl implements QueryRepository{
+public class ScheduleRepositoryImpl implements QueryDSLRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<Schedule> findByUserAndPeriodAndEmployee(User user, String period, Long employeeId, Pageable pageable) {
+    public Page<Schedule> findByUserAndPeriodAndEmployee(User user, LocalDate dateFrom, LocalDate dateTo, Long employeeId, Pageable pageable) {
 
         List<Schedule> content = jpaQueryFactory
                 .selectFrom(schedule)
-                .where(userEq(user), dateBetween(period), employeeIdEq(employeeId))
+                .where(userEq(user), dateBetween(dateFrom, dateTo), employeeIdEq(employeeId))
                 .orderBy(schedule.date.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(content, pageable, content.size());
+        JPAQuery<Long> count = jpaQueryFactory
+                .select(schedule.count())
+                .from(schedule)
+                .where(userEq(user), dateBetween(dateFrom, dateTo), employeeIdEq(employeeId));
+
+        return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
     }
 
     private BooleanExpression userEq(User user) {
         return schedule.employee.user.eq(user);
     }
 
-    private BooleanExpression dateBetween(String period) {
+    private BooleanExpression dateBetween(LocalDate dateFrom, LocalDate dateTo) {
 
-        if (period == null) {
+        if (dateFrom == null & dateTo == null) {
             return null;
         }
 
-        String[] date = period.split(",");
-        LocalDate from = LocalDate.parse(date[0]);
-        LocalDate to = LocalDate.parse(date[1]);
-
-        return schedule.date.between(from, to);
+        return schedule.date.between(dateFrom, dateTo);
     }
 
     private BooleanExpression employeeIdEq(Long employeeId) {

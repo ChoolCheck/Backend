@@ -23,8 +23,10 @@ public class StatisticsController {
     private final StatisticsService statisticsService;
 
     @GetMapping
-    public ResponseEntity<List<StatisticsResponseDto>> getStatistics(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<List<StatisticsResponseDto>> getStatistics(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate dateFrom,
+                                                                     @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateTo,
+                                                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return new ResponseEntity(statisticsService.getStatistics(start, end, customUserDetails), HttpStatus.OK);
+        return new ResponseEntity(statisticsService.getStatistics(dateFrom, dateTo, customUserDetails), HttpStatus.OK);
     }
 }

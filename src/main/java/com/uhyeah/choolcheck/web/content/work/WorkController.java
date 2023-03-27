@@ -1,13 +1,12 @@
-package com.uhyeah.choolcheck.web.work;
+package com.uhyeah.choolcheck.web.content.work;
 
-import com.uhyeah.choolcheck.web.work.dto.WorkResponseDto;
-import com.uhyeah.choolcheck.web.work.dto.WorkSaveRequestDto;
-import com.uhyeah.choolcheck.web.work.dto.WorkUpdateRequestDto;
+import com.uhyeah.choolcheck.web.content.work.dto.WorkResponseDto;
+import com.uhyeah.choolcheck.web.content.work.dto.WorkUpdateRequestDto;
+import com.uhyeah.choolcheck.web.content.work.dto.WorkSaveRequestDto;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -54,10 +53,11 @@ public class WorkController {
     }
 
     @GetMapping()
-    public ResponseEntity<Page<WorkResponseDto>> getWorkList(@RequestParam(name = "employee", required = false) Long employeeId, @RequestParam(required = false) String period, @AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public ResponseEntity<Page<WorkResponseDto>> getWorkList(@RequestParam(name = "employee", required = false) Long employeeId, @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate dateFrom,
+                                                             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateTo, @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                              @PageableDefault(size=10) Pageable pageable) {
 
-        return new ResponseEntity(workService.getWorkList(customUserDetails, employeeId, period, pageable), HttpStatus.OK);
+        return new ResponseEntity(workService.getWorkList(customUserDetails, employeeId, dateFrom, dateTo, pageable), HttpStatus.OK);
     }
 
     @GetMapping("/month")

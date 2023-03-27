@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +75,21 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
     }
 
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity handleDateTimeParseException(DateTimeParseException e) {
+
+        StatusCode statusCode = StatusCode.INVALID_PARAMETER;
+
+        StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
+                .statusCode(statusCode)
+                .message("시간 형식이 올바르지 않습니다.")
+                .fieldName("period")
+                .rejectValue(e.getParsedString())
+                .build();
+
+        log.error("[exceptionHandle] InvalidFormatException = {}", exceptionResponseDto.toString());
+        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
+    }
 
     //요청된 데이터와 정의된 데이터의 type이 다를 경우
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -121,21 +137,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
     }
 
-//    @ExceptionHandler(ExpiredJwtException.class)
-//    public ResponseEntity handleJwtException(ExpiredJwtException e) {
-//
-//        StatusCode statusCode = StatusCode.UNAUTHORIZED_USER;
-//
-//        StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
-//                .statusCode(statusCode)
-//                .message("만료된 JWT토큰입니다.")
-//                .build();
-//
-//        log.error("[exceptionHandle] JwtException = {}", exceptionResponseDto.toString());
-//        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
-//
-//    }
-
 
     @ExceptionHandler(JwtException.class)
     public ResponseEntity handleJwtException(JwtException e) {
@@ -160,7 +161,6 @@ public class GlobalExceptionHandler {
 
         log.error("[exceptionHandle] JwtException = {}", exceptionResponseDto.toString());
         return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
-
     }
 
 

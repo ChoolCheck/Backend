@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.work.dto;
+package com.uhyeah.choolcheck.web.content.work.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;

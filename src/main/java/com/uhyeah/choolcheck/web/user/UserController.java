@@ -29,9 +29,9 @@ public class UserController {
     }
 
     @PostMapping("/email")
-    public ResponseEntity verifyEmail(@RequestParam @Email(message = "이메일 형식이 맞지 않습니다.") String email) {
+    public ResponseEntity verifyEmail(@RequestBody EmailValidateRequestDto emailValidateRequestDto) {
 
-        userService.verifyEmail(email);
+        userService.verifyEmail(emailValidateRequestDto);
 
         return new ResponseEntity("이메일 인증메일 전송 성공.", HttpStatus.OK);
     }

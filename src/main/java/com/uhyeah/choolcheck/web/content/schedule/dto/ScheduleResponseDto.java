@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.schedule.dto;
+package com.uhyeah.choolcheck.web.content.schedule.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;

@@ -1,8 +1,8 @@
-package com.uhyeah.choolcheck.web.schedule;
+package com.uhyeah.choolcheck.web.content.schedule;
 
-import com.uhyeah.choolcheck.web.schedule.dto.ScheduleResponseDto;
-import com.uhyeah.choolcheck.web.schedule.dto.ScheduleSaveRequestDto;
-import com.uhyeah.choolcheck.web.schedule.dto.ScheduleUpdateRequestDto;
+import com.uhyeah.choolcheck.web.content.schedule.dto.ScheduleResponseDto;
+import com.uhyeah.choolcheck.web.content.schedule.dto.ScheduleSaveRequestDto;
+import com.uhyeah.choolcheck.web.content.schedule.dto.ScheduleUpdateRequestDto;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -60,10 +60,11 @@ public class ScheduleController {
     }
 
     @GetMapping()
-    public ResponseEntity<Page<ScheduleResponseDto>> getScheduleList(@RequestParam(name = "employee", required = false) Long employeeId, @RequestParam(required = false) String period, @AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                             @PageableDefault(size=10) Pageable pageable) {
+    public ResponseEntity<Page<ScheduleResponseDto>> getScheduleList(@RequestParam(name = "employee", required = false) Long employeeId, @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate dateFrom,
+                                                                     @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateTo, @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                                     @PageableDefault(size=10) Pageable pageable) {
 
-        return new ResponseEntity(scheduleService.getScheduleList(customUserDetails, employeeId, period, pageable), HttpStatus.OK);
+        return new ResponseEntity(scheduleService.getScheduleList(customUserDetails, employeeId, dateFrom, dateTo, pageable), HttpStatus.OK);
     }
 
     @GetMapping("/month")

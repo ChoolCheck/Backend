@@ -1,20 +1,19 @@
-package com.uhyeah.choolcheck.web.work.dto;
+package com.uhyeah.choolcheck.web.content.schedule.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Getter
-public class WorkUpdateRequestDto {
+public class ScheduleUpdateRequestDto {
 
     @NotNull(message = "직원id는 필수항목입니다.")
-    private Long employee_id;
+    private Long employeeId;
 
-    private Long hours_id;
+    private Long hoursId;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;

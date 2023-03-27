@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.work;
+package com.uhyeah.choolcheck.web.content.work;
 
 import com.uhyeah.choolcheck.domain.entity.Employee;
 import com.uhyeah.choolcheck.domain.entity.Hours;
@@ -6,12 +6,11 @@ import com.uhyeah.choolcheck.domain.entity.Work;
 import com.uhyeah.choolcheck.domain.repository.EmployeeRepository;
 import com.uhyeah.choolcheck.domain.repository.HoursRepository;
 import com.uhyeah.choolcheck.domain.repository.WorkRepository;
+import com.uhyeah.choolcheck.web.content.work.dto.WorkResponseDto;
+import com.uhyeah.choolcheck.web.content.work.dto.WorkUpdateRequestDto;
 import com.uhyeah.choolcheck.web.exception.CustomException;
 import com.uhyeah.choolcheck.web.exception.StatusCode;
-import com.uhyeah.choolcheck.web.schedule.dto.ScheduleResponseDto;
-import com.uhyeah.choolcheck.web.work.dto.WorkResponseDto;
-import com.uhyeah.choolcheck.web.work.dto.WorkSaveRequestDto;
-import com.uhyeah.choolcheck.web.work.dto.WorkUpdateRequestDto;
+import com.uhyeah.choolcheck.web.content.work.dto.WorkSaveRequestDto;
 import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,22 +34,22 @@ public class WorkService {
     @Transactional
     public void save(WorkSaveRequestDto workSaveRequestDto) {
 
-        Employee employee = employeeRepository.findById(workSaveRequestDto.getEmployee_id())
+        Employee employee = employeeRepository.findById(workSaveRequestDto.getEmployeeId())
                 .orElseThrow(() -> CustomException.builder()
                         .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                         .message("존재하지 않는 직원입니다.")
-                        .fieldName("employee_id")
-                        .rejectValue(workSaveRequestDto.getEmployee_id().toString())
+                        .fieldName("employeeId")
+                        .rejectValue(workSaveRequestDto.getEmployeeId().toString())
                         .build());
 
         Hours hours = null;
-        if (workSaveRequestDto.getHours_id() != null) {
-            hours = hoursRepository.findById(workSaveRequestDto.getHours_id())
+        if (workSaveRequestDto.getHoursId() != null) {
+            hours = hoursRepository.findById(workSaveRequestDto.getHoursId())
                     .orElseThrow(() -> CustomException.builder()
                             .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                             .message("존재하지 않는 근무형태입니다.")
-                            .fieldName("hours_id")
-                            .rejectValue(workSaveRequestDto.getHours_id().toString())
+                            .fieldName("hoursId")
+                            .rejectValue(workSaveRequestDto.getHoursId().toString())
                             .build());
         }
 
@@ -73,23 +72,23 @@ public class WorkService {
         Employee employee = work.getEmployee();
         Hours hours = work.getHours();
 
-        if (!workUpdateRequestDto.getEmployee_id().equals(employee.getId())) {
-            employee = employeeRepository.findById(workUpdateRequestDto.getEmployee_id())
+        if (!workUpdateRequestDto.getEmployeeId().equals(employee.getId())) {
+            employee = employeeRepository.findById(workUpdateRequestDto.getEmployeeId())
                     .orElseThrow(() -> CustomException.builder()
                             .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                             .message("존재하지 않는 직원입니다.")
-                            .fieldName("employee_id")
-                            .rejectValue(workUpdateRequestDto.getEmployee_id().toString())
+                            .fieldName("employeeId")
+                            .rejectValue(workUpdateRequestDto.getEmployeeId().toString())
                             .build());
         }
 
-        if (workUpdateRequestDto.getHours_id() != null) {
-            hours = hoursRepository.findById(workUpdateRequestDto.getHours_id())
+        if (workUpdateRequestDto.getHoursId() != null) {
+            hours = hoursRepository.findById(workUpdateRequestDto.getHoursId())
                     .orElseThrow(() -> CustomException.builder()
                             .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                             .message("존재하지 않는 근무형태입니다.")
-                            .fieldName("hours_id")
-                            .rejectValue(workUpdateRequestDto.getHours_id().toString())
+                            .fieldName("hoursId")
+                            .rejectValue(workUpdateRequestDto.getHoursId().toString())
                             .build());
         }
         work.update(employee, hours, workUpdateRequestDto.getDate(), workUpdateRequestDto.getStartTime(), workUpdateRequestDto.getEndTime());
@@ -127,9 +126,9 @@ public class WorkService {
 
 
     @Transactional(readOnly = true)
-    public Page<WorkResponseDto> getWorkList(CustomUserDetails customUserDetails, Long employeeId, String period, Pageable pageable) {
+    public Page<WorkResponseDto> getWorkList(CustomUserDetails customUserDetails, Long employeeId, LocalDate dateFrom, LocalDate dateTo, Pageable pageable) {
 
-        return workRepository.findByUserAndPeriodAndEmployee(customUserDetails.getUser(), period, employeeId, pageable)
+        return workRepository.findByUserAndPeriodAndEmployee(customUserDetails.getUser(), dateFrom, dateTo, employeeId, pageable)
                 .map(WorkResponseDto::new);
     }
 
@@ -137,7 +136,7 @@ public class WorkService {
     public List<WorkResponseDto> getWorkCalendar(LocalDate date, CustomUserDetails customUserDetails) {
 
         LocalDate start = date.withDayOfMonth(1);
-        LocalDate end = date.withDayOfMonth(date.lengthOfMonth());
+        LocalDate end = LocalDate.now().minusDays(1);
 
         return workRepository.findByDateBetween(customUserDetails.getUser(), start, end).stream()
                 .map(WorkResponseDto::new)

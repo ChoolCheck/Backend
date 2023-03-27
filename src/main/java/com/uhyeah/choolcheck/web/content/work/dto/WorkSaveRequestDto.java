@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.work.dto;
+package com.uhyeah.choolcheck.web.content.work.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.uhyeah.choolcheck.domain.entity.Employee;
@@ -15,9 +15,9 @@ import java.time.LocalTime;
 public class WorkSaveRequestDto {
 
     @NotNull(message = "직원id는 필수항목입니다.")
-    private Long employee_id;
+    private Long employeeId;
 
-    private Long hours_id;
+    private Long hoursId;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;

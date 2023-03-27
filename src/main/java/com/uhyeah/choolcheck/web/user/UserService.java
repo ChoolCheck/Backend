@@ -60,17 +60,17 @@ public class UserService {
         userRepository.save(userSaveRequestDto.toEntity(passwordEncoder));
     }
 
-    public void verifyEmail(String email) {
+    public void verifyEmail(EmailValidateRequestDto emailValidateRequestDto) {
 
         String code = createCode();
-        String receive = email;
+        String receive = emailValidateRequestDto.getEmail();
         String subject = "[출첵] 이메일 인증 메일입니다.";
         String text = "인증번호 : " + code;
 
-        redisRepository.setValues(code, email);
-
+        redisRepository.setValues(code, receive);
         mailService.sendMail(receive, subject, text);
     }
+
     @Transactional(readOnly = true)
     public TokenResponseDto login(UserLoginRequestDto userLoginRequestDto) {
 
