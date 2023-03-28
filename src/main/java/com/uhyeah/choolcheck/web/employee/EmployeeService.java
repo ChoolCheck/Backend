@@ -41,7 +41,8 @@ public class EmployeeService {
                         .fieldName("id")
                         .rejectValue(id.toString())
                         .build());
-        employeeRepository.delete(employee);
+
+        employee.setDelFlag();
     }
 
     @Transactional
@@ -86,14 +87,14 @@ public class EmployeeService {
     @Transactional(readOnly = true)
     public List<EmployeeResponseDto> getEmployeeList(CustomUserDetails customUserDetails) {
 
-        return employeeRepository.findByUser(customUserDetails.getUser()).stream()
+        return employeeRepository.findByUserAndDelFlagFalse(customUserDetails.getUser()).stream()
                 .map(EmployeeResponseDto::new)
                 .collect(Collectors.toList());
     }
 
 
     private void checkDuplication(String name, Color color, User user) {
-        if(employeeRepository.existsByNameAndColorAndUser(name, color, user)) {
+        if(employeeRepository.existsByNameAndColorAndUserAndDelFlagFalse(name, color, user)) {
             throw CustomException.builder()
                     .statusCode(StatusCode.DUPLICATE_RESOURCE)
                     .message("중복된 직원-색상 입니다.")

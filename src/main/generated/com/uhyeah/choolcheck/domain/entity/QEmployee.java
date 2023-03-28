@@ -24,6 +24,8 @@ public class QEmployee extends EntityPathBase<Employee> {
 
     public final EnumPath<com.uhyeah.choolcheck.domain.enums.Color> color = createEnum("color", com.uhyeah.choolcheck.domain.enums.Color.class);
 
+    public final BooleanPath delFlag = createBoolean("delFlag");
+
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final StringPath name = createString("name");

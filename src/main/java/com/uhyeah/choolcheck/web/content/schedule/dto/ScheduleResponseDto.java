@@ -39,5 +39,9 @@ public class ScheduleResponseDto {
         if (schedule.getHours() != null) {
             this.hours = schedule.getHours().getTitle();
         }
+
+        if (schedule.getEmployee().isDelFlag()) {
+            name += "(X)";
+        }
     }
 }

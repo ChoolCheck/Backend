@@ -23,5 +23,6 @@ public class EmployeeResponseDto {
         this.name = employee.getName();
         this.role = employee.getRole();
         this.color = employee.getColor();
+
     }
 }

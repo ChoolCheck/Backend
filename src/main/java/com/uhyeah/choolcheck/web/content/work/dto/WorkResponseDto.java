@@ -40,6 +40,10 @@ public class WorkResponseDto {
         if (work.getHours() != null) {
             this.hours = work.getHours().getTitle();
         }
+
+        if (work.getEmployee().isDelFlag()) {
+            name += "(X)";
+        }
     }
 
 

@@ -30,17 +30,24 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private Color color;
 
+    private boolean delFlag;
+
     @Builder
     public Employee(User user, String name, Role role, Color color) {
         this.user = user;
         this.name = name;
         this.role = role;
         this.color = color;
+        this.delFlag = false;
     }
 
     public void update(String name, Role role, Color color) {
         this.name = name;
         this.role = role;
         this.color = color;
+    }
+
+    public void setDelFlag() {
+        this.delFlag = true;
     }
 }

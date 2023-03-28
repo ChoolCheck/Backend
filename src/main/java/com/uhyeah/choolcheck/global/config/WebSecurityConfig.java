@@ -6,6 +6,7 @@ import com.uhyeah.choolcheck.global.jwt.JwtSecurityConfig;
 import com.uhyeah.choolcheck.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,7 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisRepository redisRepository;
+    private final RedisTemplate<String, String> redisTemplate;
     private final CustomUserDetailsService customUserDetailsService;
 
 
@@ -43,7 +44,7 @@ public class WebSecurityConfig {
                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
 
                 .and()
-                .apply(new JwtSecurityConfig(jwtTokenProvider, redisRepository));
+                .apply(new JwtSecurityConfig(jwtTokenProvider, redisTemplate));
 
 //                .and()
 //                //.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisRepository), UsernamePasswordAuthenticationFilter.class)
