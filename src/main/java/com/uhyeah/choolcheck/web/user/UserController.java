@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping("/email")
-    public ResponseEntity verifyEmail(@RequestBody EmailValidateRequestDto emailValidateRequestDto) {
+    public ResponseEntity verifyEmail(@Valid @RequestBody EmailValidateRequestDto emailValidateRequestDto) {
 
         userService.verifyEmail(emailValidateRequestDto);
 
