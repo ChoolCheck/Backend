@@ -45,7 +45,7 @@ public class UserService {
         }
 
         String email = redisTemplate.opsForValue().get(userSaveRequestDto.getCode());
-        if (!email.equals(userSaveRequestDto.getEmail())) {
+        if (email == null || !email.equals(userSaveRequestDto.getEmail())) {
             throw CustomException.builder()
                     .statusCode(StatusCode.INVALID_PARAMETER)
                     .message("일지하지 않는 인증번호입니다..")
@@ -53,6 +53,7 @@ public class UserService {
                     .rejectValue(userSaveRequestDto.getCode())
                     .build();
         }
+
 
         userRepository.save(userSaveRequestDto.toEntity(passwordEncoder));
     }
@@ -62,9 +63,10 @@ public class UserService {
         String code = createCode();
         String receive = emailValidateRequestDto.getEmail();
         String subject = "[출첵] 이메일 인증 메일입니다.";
-        String text = "인증번호 : " + code;
+        String text = "인증번호 : " + code +
+                "\n 해당 인증번호는 5분간 유효합니다.";
 
-        redisTemplate.opsForValue().set(code, receive);
+        redisTemplate.opsForValue().set(code, receive, Duration.ofMinutes(5));
         mailService.sendMail(receive, subject, text);
     }
 
@@ -157,7 +159,7 @@ public class UserService {
 
     public static String createCode() {
 
-        StringBuffer code = new StringBuffer();
+        StringBuilder code = new StringBuilder();
         Random random = new Random();
 
         for (int i=0; i<6; i++) {

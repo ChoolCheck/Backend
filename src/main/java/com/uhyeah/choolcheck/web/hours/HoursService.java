@@ -1,7 +1,10 @@
 package com.uhyeah.choolcheck.web.hours;
 
 import com.uhyeah.choolcheck.domain.entity.Hours;
+import com.uhyeah.choolcheck.domain.entity.Schedule;
 import com.uhyeah.choolcheck.domain.repository.HoursRepository;
+import com.uhyeah.choolcheck.domain.repository.ScheduleRepository;
+import com.uhyeah.choolcheck.domain.repository.WorkRepository;
 import com.uhyeah.choolcheck.global.exception.CustomException;
 import com.uhyeah.choolcheck.global.exception.StatusCode;
 import com.uhyeah.choolcheck.web.hours.dto.HoursResponseDto;
@@ -19,6 +22,8 @@ import java.util.stream.Collectors;
 public class HoursService {
 
     private final HoursRepository hoursRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final WorkRepository workRepository;
 
     @Transactional
     public void save(HoursSaveRequestDto hoursSaveRequestDto, CustomUserDetails customUserDetails) {
@@ -39,6 +44,10 @@ public class HoursService {
                                 .fieldName("id")
                                 .rejectValue(id.toString())
                                 .build());
+
+        scheduleRepository.setHoursNull(hours);
+        workRepository.setHoursNull(hours);
+
         hoursRepository.delete(hours);
     }
 

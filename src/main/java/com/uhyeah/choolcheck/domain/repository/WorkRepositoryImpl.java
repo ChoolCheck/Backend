@@ -18,7 +18,7 @@ import static com.uhyeah.choolcheck.domain.entity.QWork.work;
 
 @Repository
 @RequiredArgsConstructor
-public class WorkRepositoryImpl implements QueryDSLRepository {
+public class WorkRepositoryImpl implements QueryDSLRepository<Work> {
 
     private final JPAQueryFactory jpaQueryFactory;
 

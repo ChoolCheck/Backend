@@ -18,7 +18,7 @@ import static com.uhyeah.choolcheck.domain.entity.QSchedule.schedule;
 
 @Repository
 @RequiredArgsConstructor
-public class ScheduleRepositoryImpl implements QueryDSLRepository {
+public class ScheduleRepositoryImpl implements QueryDSLRepository<Schedule> {
 
     private final JPAQueryFactory jpaQueryFactory;
 
