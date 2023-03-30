@@ -131,7 +131,8 @@ public class UserService {
 
         String receive = customUserDetails.getUsername();
         String subject = "[출첵] 비밀번호 변경 메일입니다.";
-        String text = "비밀번호 변경 url : " + url;
+        String text = "비밀번호 변경 url : " + url
+                +"\n 해당 링크는 10분간 유효합니다.";
 
         mailService.sendMail(receive, subject, text);
     }
