@@ -46,11 +46,16 @@ public class GlobalExceptionHandler {
 
         List<StatusResponseDto> statusResponseDtoList = new ArrayList<>();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
+
+            String rejectValue = null;
+            if (fieldError.getRejectedValue() != null) {
+                rejectValue = fieldError.getRejectedValue().toString()
+            }
             statusResponseDtoList.add(StatusResponseDto.builder()
                     .statusCode(statusCode)
                     .message(fieldError.getDefaultMessage())
                     .fieldName(fieldError.getField())
-                    .rejectValue(fieldError.getRejectedValue().toString())
+                    .rejectValue(rejectValue)
                     .build());
         }
 
