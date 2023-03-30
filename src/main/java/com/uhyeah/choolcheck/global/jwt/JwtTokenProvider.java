@@ -91,6 +91,7 @@ public class JwtTokenProvider {
         String refreshTokenRedis = redisTemplate.opsForValue().get(claims.getSubject());
 
         if(refreshTokenRedis == null) {
+            log.info("expired refreshToken");
             throw CustomException.builder()
                     .statusCode(StatusCode.UNAUTHORIZED_USER)
                     .message("만료된 refreshToken 입니다.")
@@ -106,6 +107,7 @@ public class JwtTokenProvider {
 
         Authentication authentication = getAuthentication(accessToken);
         String newAccessToken = issueAccessToken(authentication);
+        log.info("reissue accessToken");
 
         return TokenResponseDto.builder()
                 .grantType(BEARER_TYPE)

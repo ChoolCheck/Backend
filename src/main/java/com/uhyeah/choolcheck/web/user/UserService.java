@@ -78,6 +78,7 @@ public class UserService {
         TokenResponseDto tokenResponseDto = tokenProvider.generateTokenDto(authentication);
         redisTemplate.opsForValue().set(userLoginRequestDto.getEmail(), tokenResponseDto.getRefreshToken(), Duration.ofDays(14));
 
+        log.info("login");
         return tokenResponseDto;
     }
 
