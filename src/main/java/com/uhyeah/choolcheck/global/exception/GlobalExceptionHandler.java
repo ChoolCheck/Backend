@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
 
             String rejectValue = null;
             if (fieldError.getRejectedValue() != null) {
-                rejectValue = fieldError.getRejectedValue().toString()
+                rejectValue = fieldError.getRejectedValue().toString();
             }
             statusResponseDtoList.add(StatusResponseDto.builder()
                     .statusCode(statusCode)
