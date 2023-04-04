@@ -76,7 +76,7 @@ public class UserService {
         UsernamePasswordAuthenticationToken authenticationToken = userLoginRequestDto.toAuthentication();
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
         TokenResponseDto tokenResponseDto = tokenProvider.generateTokenDto(authentication);
-        redisTemplate.opsForValue().set(userLoginRequestDto.getEmail(), tokenResponseDto.getRefreshToken(), Duration.ofDays(14));
+        redisTemplate.opsForValue().set(userLoginRequestDto.getEmail(), tokenResponseDto.getRefreshToken(), Duration.ofMinutes(3));
 
         log.info("login");
         return tokenResponseDto;
