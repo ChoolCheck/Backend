@@ -50,7 +50,7 @@ public class StatisticsService {
 
     public long calculateTime(LocalTime startTime, LocalTime endTime) {
 
-        if (endTime.isAfter(LocalTime.MIDNIGHT)) {
+        if (endTime.isBefore(startTime)) {
             return Duration.between(startTime, LocalTime.MIDNIGHT).toMinutes() + Duration.between(LocalTime.MIDNIGHT, endTime).toMinutes();
         }
         else {
