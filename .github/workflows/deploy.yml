@@ -7,9 +7,9 @@ on:
       - main
 
 env:
-  S3_BUCKET_NAME : choolcheck-backend
-  CODE_DEPLOY_APPLICATION_NAME: choolcheck
-  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: choolcheck
+  S3_BUCKET_NAME : choolcheck-back
+  CODE_DEPLOY_APPLICATION_NAME: choolcheck-deploy
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: choolcheck-deploy-group
 
 jobs:
   build:
