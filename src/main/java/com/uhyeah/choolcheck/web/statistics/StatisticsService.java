@@ -51,14 +51,10 @@ public class StatisticsService {
     public long calculateTime(LocalTime startTime, LocalTime endTime) {
 
         if (endTime.isBefore(startTime)) {
-            System.out.println(Duration.between(startTime, LocalTime.MIDNIGHT).toHours());
-
-            System.out.println(Duration.between(LocalTime.MIDNIGHT, endTime).toHours());
-            System.out.println(startTime);
-            return Duration.between(startTime, LocalTime.MIDNIGHT).toMinutes() + Duration.between(LocalTime.MIDNIGHT, endTime).toMinutes();
+            return Duration.between(startTime, endTime).toHours() + 24;
         }
         else {
-            return Duration.between(startTime, endTime).toMinutes();
+            return Duration.between(startTime, endTime).toHours();
         }
     }
 }
