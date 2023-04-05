@@ -2,11 +2,11 @@ version: 0.0
 os: linux
 files:
   - source:  /
-    destination: /home/ubuntu/github_action
+    destination: /home/ubuntu/github_actions
     overwrite: yes
 
 permissions:
-  - object: /home/ubuntu/github_action
+  - object: /home/ubuntu/github_actions
     owner: ubuntu
     group: ubuntu
     mode: 755
