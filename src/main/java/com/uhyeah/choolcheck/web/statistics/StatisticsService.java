@@ -12,9 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RequiredArgsConstructor
 @Service
@@ -35,7 +36,7 @@ public class StatisticsService {
 
             long totalTime = workList.stream()
                     .filter(work -> work.getEmployee().equals(employee))
-                    .mapToLong(work -> Duration.between(work.getStartTime(), work.getEndTime()).toMinutes())
+                    .mapToLong(work -> calculateTime(work.getStartTime(), work.getEndTime()))
                     .sum();
 
             statisticsResponseDtoList.add(StatisticsResponseDto.builder()
@@ -45,5 +46,13 @@ public class StatisticsService {
                     .build());
         }
         return statisticsResponseDtoList;
+    }
+
+    public long calculateTime(LocalTime startTime, LocalTime endTime) {
+
+//        if (endTime.isAfter(LocalTime.MIDNIGHT)) {
+//            return Duration.between(startTime, LocalTime.MIDNIGHT).toMinutes() + Duration.between()
+//        }
+        return Duration.between(startTime, endTime).toMinutes();
     }
 }
