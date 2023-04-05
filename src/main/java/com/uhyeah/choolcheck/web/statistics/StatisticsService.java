@@ -42,7 +42,7 @@ public class StatisticsService {
             statisticsResponseDtoList.add(StatisticsResponseDto.builder()
                     .name(employee.getName())
                     .color(employee.getColor())
-                    .totalTime(totalTime / (double) 60)
+                    .totalTime(totalTime)
                     .build());
         }
         return statisticsResponseDtoList;
