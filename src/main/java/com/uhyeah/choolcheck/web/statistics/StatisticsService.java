@@ -54,6 +54,7 @@ public class StatisticsService {
             System.out.println(Duration.between(startTime, LocalTime.MIDNIGHT).toMinutes() + Duration.between(LocalTime.MIDNIGHT, endTime).toMinutes());
             System.out.println(Duration.between(startTime, LocalTime.MIDNIGHT).toMinutes());
             System.out.println(Duration.between(LocalTime.MIDNIGHT, endTime).toMinutes());
+            System.out.println(startTime);
             return Duration.between(startTime, LocalTime.MIDNIGHT).toMinutes() + Duration.between(LocalTime.MIDNIGHT, endTime).toMinutes();
         }
         else {
