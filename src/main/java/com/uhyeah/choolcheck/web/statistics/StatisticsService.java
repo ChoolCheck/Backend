@@ -51,6 +51,8 @@ public class StatisticsService {
     public long calculateTime(LocalTime startTime, LocalTime endTime) {
 
         if (endTime.isBefore(startTime)) {
+            System.out.println(Duration.between(startTime, LocalTime.MIDNIGHT).toMinutes() + Duration.between(LocalTime.MIDNIGHT, endTime).toMinutes());
+
             return Duration.between(startTime, LocalTime.MIDNIGHT).toMinutes() + Duration.between(LocalTime.MIDNIGHT, endTime).toMinutes();
         }
         else {
