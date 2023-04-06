@@ -9,15 +9,14 @@ import lombok.Getter;
 @Getter
 public class EmployeeResponseDto {
 
-    private Long id;
+    private final Long id;
 
-    private String name;
+    private final String name;
 
-    private Role role;
+    private final Role role;
 
-    private Color color;
+    private final Color color;
 
-    @Builder
     public EmployeeResponseDto(Employee employee) {
         this.id = employee.getId();
         this.name = employee.getName();

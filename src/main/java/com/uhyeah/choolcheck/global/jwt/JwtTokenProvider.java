@@ -1,5 +1,6 @@
 package com.uhyeah.choolcheck.global.jwt;
 
+import com.uhyeah.choolcheck.global.RedisService;
 import com.uhyeah.choolcheck.global.exception.CustomException;
 import com.uhyeah.choolcheck.global.exception.StatusCode;
 import com.uhyeah.choolcheck.web.user.CustomUserDetailsService;
@@ -9,7 +10,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,22 +27,24 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class JwtTokenProvider {
+
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "bearer";
     public static final String BEARER_PREFIX = "Bearer";
+
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;
     private static final long MAIL_TOKEN_EXPIRE_TIME = 1000 * 60 * 10;
 
     private final Key key;
     private final CustomUserDetailsService customUserDetailsService;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisService redisService;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, CustomUserDetailsService customUserDetailsService, RedisTemplate redisTemplate) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, CustomUserDetailsService customUserDetailsService, RedisService redisService) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.customUserDetailsService = customUserDetailsService;
-        this.redisTemplate = redisTemplate;
+        this.redisService = redisService;
     }
 
     public String issueAccessToken(Authentication authentication) {
@@ -88,7 +90,7 @@ public class JwtTokenProvider {
     public TokenResponseDto reissueAccessToken(String accessToken, String refreshToken) {
 
         Claims claims = parseClaims(accessToken);
-        String refreshTokenRedis = redisTemplate.opsForValue().get(claims.getSubject());
+        String refreshTokenRedis = redisService.get(claims.getSubject());
 
         if(refreshTokenRedis == null) {
             log.info("expired refreshToken");

@@ -15,5 +15,4 @@ public enum StatusCode {
     UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED);
 
     private final HttpStatus httpStatus;
-
 }

@@ -3,7 +3,6 @@ package com.uhyeah.choolcheck.domain.repository;
 import com.uhyeah.choolcheck.domain.entity.Hours;
 import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.domain.entity.Work;
-import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

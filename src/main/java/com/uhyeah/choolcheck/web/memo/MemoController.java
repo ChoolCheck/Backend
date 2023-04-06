@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -22,39 +23,36 @@ public class MemoController {
     public final MemoService memoService;
 
     @PostMapping
-    public ResponseEntity save(@Valid @RequestBody MemoSaveRequestDto memoSaveRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<Object> save(@Valid @RequestBody MemoSaveRequestDto memoSaveRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         memoService.save(memoSaveRequestDto, customUserDetails);
-
-        return new ResponseEntity("메모작성 성공.", HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity update(@PathVariable Long id, @Valid @RequestBody MemoUpdateRequestDto memoUpdateRequestDto) {
+    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody MemoUpdateRequestDto memoUpdateRequestDto) {
 
         memoService.update(id, memoUpdateRequestDto);
-
-        return new ResponseEntity("메모수정 성공.", HttpStatus.CREATED);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
 
         memoService.delete(id);
-
-        return new ResponseEntity("메모삭제 성공.", HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MemoResponseDto> getMemo(@PathVariable Long id) {
 
-        return new ResponseEntity(memoService.getMemo(id), HttpStatus.OK);
+        return ResponseEntity.ok(memoService.getMemo(id));
     }
 
     @GetMapping()
-    public ResponseEntity<MemoResponseDto> getMemoByDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<List<MemoResponseDto>> getMemoByDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return new ResponseEntity(memoService.getMemoByDate(date, customUserDetails), HttpStatus.OK);
+        return ResponseEntity.ok(memoService.getMemoByDate(date, customUserDetails));
     }
 
 }

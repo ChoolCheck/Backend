@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.uhyeah.choolcheck.domain.entity.Hours;
 import com.uhyeah.choolcheck.domain.entity.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 
 @Getter
+@NoArgsConstructor
 public class HoursSaveRequestDto {
 
     @NotBlank(message = "근무형태명은 필수항목입니다.")

@@ -21,40 +21,38 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping
-    public ResponseEntity save(@Valid @RequestBody EmployeeSaveRequestDto employeeSaveRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<Object> save(@Valid @RequestBody EmployeeSaveRequestDto employeeSaveRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         employeeService.save(employeeSaveRequestDto, customUserDetails);
-
-        return new ResponseEntity("직원저장 성공.", HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-
-        employeeService.delete(id);
-
-        return new ResponseEntity("직원삭제 성공.", HttpStatus.OK);
-    }
 
     @PatchMapping("/{id}")
-    public ResponseEntity update(@PathVariable Long id, @Valid @RequestBody EmployeeUpdateRequestDto employeeUpdateRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody EmployeeUpdateRequestDto employeeUpdateRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         employeeService.update(id, employeeUpdateRequestDto, customUserDetails);
-
-        return new ResponseEntity("직원수정 성공.", HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
+
+        employeeService.delete(id);
+        return ResponseEntity.ok().build();
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeResponseDto> getEmployee(@PathVariable Long id) {
 
-        return new ResponseEntity(employeeService.getEmployee(id), HttpStatus.OK);
+        return ResponseEntity.ok(employeeService.getEmployee(id));
     }
 
     @GetMapping()
     public ResponseEntity<List<EmployeeResponseDto>> getEmployeeList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return new ResponseEntity<>(employeeService.getEmployeeList(customUserDetails), HttpStatus.OK);
+        return ResponseEntity.ok(employeeService.getEmployeeList(customUserDetails));
     }
-
-
 }

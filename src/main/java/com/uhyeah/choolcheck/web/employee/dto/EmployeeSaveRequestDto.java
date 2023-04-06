@@ -5,13 +5,13 @@ import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.domain.enums.Color;
 import com.uhyeah.choolcheck.domain.enums.Role;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
+@NoArgsConstructor
 public class EmployeeSaveRequestDto {
 
     @NotBlank(message = "이름은 필수항목입니다.")

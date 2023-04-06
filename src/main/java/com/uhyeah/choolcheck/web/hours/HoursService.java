@@ -1,7 +1,6 @@
 package com.uhyeah.choolcheck.web.hours;
 
 import com.uhyeah.choolcheck.domain.entity.Hours;
-import com.uhyeah.choolcheck.domain.entity.Schedule;
 import com.uhyeah.choolcheck.domain.repository.HoursRepository;
 import com.uhyeah.choolcheck.domain.repository.ScheduleRepository;
 import com.uhyeah.choolcheck.domain.repository.WorkRepository;
@@ -28,10 +27,9 @@ public class HoursService {
     @Transactional
     public void save(HoursSaveRequestDto hoursSaveRequestDto, CustomUserDetails customUserDetails) {
 
-        checkDuplication(hoursSaveRequestDto, customUserDetails);
+        checkTitleDuplication(hoursSaveRequestDto.getTitle(), customUserDetails);
         hoursRepository.save(hoursSaveRequestDto.toEntity(customUserDetails.getUser()));
     }
-
 
 
     @Transactional
@@ -50,6 +48,7 @@ public class HoursService {
 
         hoursRepository.delete(hours);
     }
+
 
     @Transactional(readOnly = true)
     public HoursResponseDto getHours(Long id) {
@@ -72,13 +71,15 @@ public class HoursService {
                 .collect(Collectors.toList());
     }
 
-    private void checkDuplication(HoursSaveRequestDto hoursSaveRequestDto, CustomUserDetails customUserDetails) {
-        if (hoursRepository.existsByTitleAndUser(hoursSaveRequestDto.getTitle(), customUserDetails.getUser())) {
+
+    private void checkTitleDuplication(String title, CustomUserDetails customUserDetails) {
+
+        if (hoursRepository.existsByTitleAndUser(title, customUserDetails.getUser())) {
             throw CustomException.builder()
                     .statusCode(StatusCode.DUPLICATE_RESOURCE)
                     .message("중복된 근무형태명 입니다.")
                     .fieldName("title")
-                    .rejectValue(hoursSaveRequestDto.getTitle())
+                    .rejectValue(title)
                     .build();
         }
     }

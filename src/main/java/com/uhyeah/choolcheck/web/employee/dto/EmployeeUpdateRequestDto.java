@@ -3,11 +3,13 @@ package com.uhyeah.choolcheck.web.employee.dto;
 import com.uhyeah.choolcheck.domain.enums.Color;
 import com.uhyeah.choolcheck.domain.enums.Role;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
+@NoArgsConstructor
 public class EmployeeUpdateRequestDto {
 
     @NotBlank(message = "이름은 필수항목입니다.")

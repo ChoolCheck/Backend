@@ -20,31 +20,29 @@ public class HoursController {
     private final HoursService hoursService;
 
     @PostMapping()
-    public ResponseEntity save(@Valid @RequestBody HoursSaveRequestDto hoursSaveRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<Object> save(@Valid @RequestBody HoursSaveRequestDto hoursSaveRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         hoursService.save(hoursSaveRequestDto, customUserDetails);
-
-        return new ResponseEntity("근무형태 저장 완료.", HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
 
         hoursService.delete(id);
-
-        return new ResponseEntity("근무형태 삭제 완료.", HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<HoursResponseDto> getHours(@PathVariable Long id) {
 
-        return new ResponseEntity(hoursService.getHours(id), HttpStatus.OK);
+        return ResponseEntity.ok(hoursService.getHours(id));
     }
 
     @GetMapping()
     public ResponseEntity<List<HoursResponseDto>> getHoursList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return new ResponseEntity(hoursService.getHoursList(customUserDetails), HttpStatus.OK);
+        return ResponseEntity.ok(hoursService.getHoursList(customUserDetails));
     }
 
 

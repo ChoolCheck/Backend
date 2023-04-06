@@ -1,4 +1,4 @@
-package com.uhyeah.choolcheck.web.user;
+package com.uhyeah.choolcheck.global;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +14,10 @@ public class MailService {
     private final JavaMailSender javaMailSender;
 
     public void sendMail(String receive, String subject, String text) {
+
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 
         try {
-
             simpleMailMessage.setTo(receive);
             simpleMailMessage.setSubject(subject);
             simpleMailMessage.setText(text);
@@ -25,7 +25,7 @@ public class MailService {
             javaMailSender.send(simpleMailMessage);
 
         } catch (Exception e) {
-            log.error(e.toString());
+            log.error("[MailException]" + e.toString());
         }
     }
 

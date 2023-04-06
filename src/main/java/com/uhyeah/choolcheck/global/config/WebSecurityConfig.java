@@ -1,9 +1,8 @@
 package com.uhyeah.choolcheck.global.config;
 
+import com.uhyeah.choolcheck.global.RedisService;
+import com.uhyeah.choolcheck.global.jwt.*;
 import com.uhyeah.choolcheck.web.user.CustomUserDetailsService;
-import com.uhyeah.choolcheck.global.jwt.JwtAuthenticationEntryPoint;
-import com.uhyeah.choolcheck.global.jwt.JwtSecurityConfig;
-import com.uhyeah.choolcheck.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,13 +13,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class WebSecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisService redisService;
     private final CustomUserDetailsService customUserDetailsService;
 
 
@@ -44,11 +44,8 @@ public class WebSecurityConfig {
                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
 
                 .and()
-                .apply(new JwtSecurityConfig(jwtTokenProvider, redisTemplate));
-
-//                .and()
-//                //.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisRepository), UsernamePasswordAuthenticationFilter.class)
-//                .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
 
         return http.build();
     }

@@ -10,13 +10,12 @@ import java.time.LocalDate;
 @Getter
 public class MemoResponseDto {
 
-    private Long id;
+    private final Long id;
 
-    private LocalDate date; //필요한가?
+    private final LocalDate date;
 
-    private String content;
+    private final String content;
 
-    @Builder
     public MemoResponseDto(Memo memo) {
         this.id = memo.getId();
         this.date = memo.getDate();

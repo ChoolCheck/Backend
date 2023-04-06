@@ -23,13 +23,33 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
 
+
     @Transactional
     public void save(EmployeeSaveRequestDto employeeSaveRequestDto, CustomUserDetails customUserDetails) {
 
-        checkDuplication(employeeSaveRequestDto.getName(), employeeSaveRequestDto.getColor(), customUserDetails.getUser());
-
+        checkNameAndColorDuplication(employeeSaveRequestDto.getName(), employeeSaveRequestDto.getColor(), customUserDetails.getUser());
         employeeRepository.save(employeeSaveRequestDto.toEntity(customUserDetails.getUser()));
     }
+
+
+    @Transactional
+    public void update(Long id, EmployeeUpdateRequestDto employeeUpdateReqestDto, CustomUserDetails customUserDetails) {
+
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> CustomException.builder()
+                        .statusCode(StatusCode.RESOURCE_NOT_FOUND)
+                        .message("존재하지 않는 직원입니다.")
+                        .fieldName("id")
+                        .rejectValue(id.toString())
+                        .build());
+
+        if (employee.getColor() != employeeUpdateReqestDto.getColor()) {
+            checkNameAndColorDuplication(employeeUpdateReqestDto.getName(), employeeUpdateReqestDto.getColor(), customUserDetails.getUser());
+        }
+
+        employee.update(employeeUpdateReqestDto.getName(), employeeUpdateReqestDto.getRole(), employeeUpdateReqestDto.getColor());
+    }
+
 
     @Transactional
     public void delete(Long id) {
@@ -43,31 +63,6 @@ public class EmployeeService {
                         .build());
 
         employee.setDelFlag();
-    }
-
-    @Transactional
-    public void update(Long id, EmployeeUpdateRequestDto employeeUpdateReqestDto, CustomUserDetails customUserDetails) {
-
-        Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> CustomException.builder()
-                        .statusCode(StatusCode.RESOURCE_NOT_FOUND)
-                        .message("존재하지 않는 직원입니다.")
-                        .fieldName("id")
-                        .rejectValue(id.toString())
-                        .build());
-
-        String name = employeeUpdateReqestDto.getName();
-        Color color = employeeUpdateReqestDto.getColor();
-
-        if(employeeRepository.existsByNameAndColorAndUserAndIdNot(name, color, customUserDetails.getUser(), id)) {
-            throw CustomException.builder()
-                    .statusCode(StatusCode.DUPLICATE_RESOURCE)
-                    .message("중복된 직원-색상 입니다.")
-                    .fieldName("name-color")
-                    .rejectValue(name + "-" + color)
-                    .build();
-        }
-        employee.update(employeeUpdateReqestDto.getName(), employeeUpdateReqestDto.getRole(), employeeUpdateReqestDto.getColor());
     }
 
 
@@ -93,7 +88,8 @@ public class EmployeeService {
     }
 
 
-    private void checkDuplication(String name, Color color, User user) {
+    private void checkNameAndColorDuplication(String name, Color color, User user) {
+
         if(employeeRepository.existsByNameAndColorAndUserAndDelFlagFalse(name, color, user)) {
             throw CustomException.builder()
                     .statusCode(StatusCode.DUPLICATE_RESOURCE)
@@ -103,6 +99,4 @@ public class EmployeeService {
                     .build();
         }
     }
-
-
 }

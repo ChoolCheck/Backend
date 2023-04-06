@@ -1,9 +1,7 @@
 package com.uhyeah.choolcheck.web.hours.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.uhyeah.choolcheck.domain.entity.Hours;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalTime;
@@ -11,17 +9,16 @@ import java.time.LocalTime;
 @Getter
 public class HoursResponseDto {
 
-    private Long id;
+    private final Long id;
 
-    private String title;
-
-    @JsonFormat(pattern = "HH:mm")
-    private LocalTime startTime;
+    private final String title;
 
     @JsonFormat(pattern = "HH:mm")
-    private LocalTime endTime;
+    private final LocalTime startTime;
 
-    @Builder
+    @JsonFormat(pattern = "HH:mm")
+    private final LocalTime endTime;
+
     public HoursResponseDto(Hours hours) {
         this.id = hours.getId();
         this.title = hours.getTitle();

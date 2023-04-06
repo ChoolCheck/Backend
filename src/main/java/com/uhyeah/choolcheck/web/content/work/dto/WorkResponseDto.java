@@ -2,7 +2,8 @@ package com.uhyeah.choolcheck.web.content.work.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;
-import com.uhyeah.choolcheck.domain.entity.Work;
+import com.uhyeah.choolcheck.domain.entity.Employee;
+import com.uhyeah.choolcheck.domain.entity.Hours;
 import com.uhyeah.choolcheck.domain.entity.Work;
 import com.uhyeah.choolcheck.domain.enums.Color;
 import lombok.Getter;
@@ -13,38 +14,50 @@ import java.time.LocalTime;
 @Getter
 public class WorkResponseDto {
 
-    private Long id;
+    private final Long id;
 
-    private String name;
+    private final String name;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate date;
+    private final LocalDate date;
 
-    private LocalTime startTime;
+    private final LocalTime startTime;
 
-    private LocalTime endTime;
+    private final LocalTime endTime;
 
-    private String hours;
+    private final String hours;
 
-    private Color color;
+    private final Color color;
 
     @QueryProjection
     public WorkResponseDto(Work work) {
         this.id = work.getId();
-        this.name = work.getEmployee().getName();
+        this.name = getEmployeeName(work.getEmployee());
         this.date = work.getDate();
         this.startTime = work.getStartTime();
         this.endTime = work.getEndTime();
+        this.hours = getHoursTitle(work.getHours());
         this.color = work.getEmployee().getColor();
-
-        if (work.getHours() != null) {
-            this.hours = work.getHours().getTitle();
-        }
-
-        if (work.getEmployee().isDelFlag()) {
-            name += "(X)";
-        }
     }
 
+
+    private String getEmployeeName(Employee employee) {
+
+        String name = employee.getName();
+
+        if (employee.isDelFlag()) {
+            name += "(X)";
+        }
+        return name;
+    }
+
+
+    private String getHoursTitle(Hours hours) {
+
+        if (hours != null) {
+            return hours.getTitle();
+        }
+        return null;
+    }
 
 }

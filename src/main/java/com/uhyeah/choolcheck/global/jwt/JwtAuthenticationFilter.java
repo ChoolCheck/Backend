@@ -1,5 +1,6 @@
 package com.uhyeah.choolcheck.global.jwt;
 
+import com.uhyeah.choolcheck.global.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,7 +22,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisService redisService;
 
 
     @Override
@@ -32,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null) {
             jwtTokenProvider.validateToken(token);
 
-            String isLogout = redisTemplate.opsForValue().get(token);
+            String isLogout = redisService.get(token);
 
             if(isLogout == null) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
@@ -45,8 +46,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 
-        String[] excludePath = {"/user/signup", "/user/email", "/user/login", "/user/reissue"};
+        final String[] excludePath = {"/user/signup", "/user/email", "/user/login", "/user/reissue"};
         String path = request.getRequestURI();
+
         return Arrays.stream(excludePath).anyMatch(path::startsWith);
     }
 }

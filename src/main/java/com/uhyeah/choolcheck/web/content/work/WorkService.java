@@ -42,21 +42,11 @@ public class WorkService {
                         .rejectValue(workSaveRequestDto.getEmployeeId().toString())
                         .build());
 
-        Hours hours = null;
-        if (workSaveRequestDto.getHoursId() != null) {
-            hours = hoursRepository.findById(workSaveRequestDto.getHoursId())
-                    .orElseThrow(() -> CustomException.builder()
-                            .statusCode(StatusCode.RESOURCE_NOT_FOUND)
-                            .message("존재하지 않는 근무형태입니다.")
-                            .fieldName("hoursId")
-                            .rejectValue(workSaveRequestDto.getHoursId().toString())
-                            .build());
-        }
-
+        Hours hours = getHours(workSaveRequestDto.getHoursId());
 
         workRepository.save(workSaveRequestDto.toEntity(employee, hours));
-
     }
+
 
     @Transactional
     public void update(Long id, WorkUpdateRequestDto workUpdateRequestDto) {
@@ -70,7 +60,6 @@ public class WorkService {
                         .build());
 
         Employee employee = work.getEmployee();
-        Hours hours = work.getHours();
 
         if (!workUpdateRequestDto.getEmployeeId().equals(employee.getId())) {
             employee = employeeRepository.findById(workUpdateRequestDto.getEmployeeId())
@@ -82,17 +71,9 @@ public class WorkService {
                             .build());
         }
 
-        if (workUpdateRequestDto.getHoursId() != null) {
-            hours = hoursRepository.findById(workUpdateRequestDto.getHoursId())
-                    .orElseThrow(() -> CustomException.builder()
-                            .statusCode(StatusCode.RESOURCE_NOT_FOUND)
-                            .message("존재하지 않는 근무형태입니다.")
-                            .fieldName("hoursId")
-                            .rejectValue(workUpdateRequestDto.getHoursId().toString())
-                            .build());
-        }
-        work.update(employee, hours, workUpdateRequestDto.getDate(), workUpdateRequestDto.getStartTime(), workUpdateRequestDto.getEndTime());
+        Hours hours = getHours(workUpdateRequestDto.getHoursId());
 
+        work.update(employee, hours, workUpdateRequestDto.getDate(), workUpdateRequestDto.getStartTime(), workUpdateRequestDto.getEndTime());
     }
 
     @Transactional
@@ -143,5 +124,19 @@ public class WorkService {
                 .collect(Collectors.toList());
     }
 
+
+    private Hours getHours(Long hoursId) {
+
+        if (hoursId != null) {
+            return hoursRepository.findById(hoursId)
+                    .orElseThrow(() -> CustomException.builder()
+                            .statusCode(StatusCode.RESOURCE_NOT_FOUND)
+                            .message("존재하지 않는 근무형태입니다.")
+                            .fieldName("hoursId")
+                            .rejectValue(hoursId.toString())
+                            .build());
+        }
+        return null;
+    }
 }
 

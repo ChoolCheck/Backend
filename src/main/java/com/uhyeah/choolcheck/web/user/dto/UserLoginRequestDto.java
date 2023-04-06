@@ -7,10 +7,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 
-@NoArgsConstructor
+
 @Getter
+@NoArgsConstructor
 public class UserLoginRequestDto {
 
     @NotBlank(message = "이메일은 필수항목입니다.")
@@ -20,11 +20,6 @@ public class UserLoginRequestDto {
     @NotBlank(message = "비밀번호는 필수항목입니다.")
     private String password;
 
-    @Builder
-    public UserLoginRequestDto(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
 
     public UsernamePasswordAuthenticationToken toAuthentication() {
         return new UsernamePasswordAuthenticationToken(email, password);

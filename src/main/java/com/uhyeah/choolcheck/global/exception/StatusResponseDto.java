@@ -3,36 +3,21 @@ package com.uhyeah.choolcheck.global.exception;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@Builder
+@ToString
 public class StatusResponseDto {
 
-    private StatusCode statusCode;
+    private final StatusCode statusCode;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String message;
+    private final String message;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String fieldName;
+    private final String fieldName;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String rejectValue;
-
-    @Builder
-    public StatusResponseDto(StatusCode statusCode, String message, String fieldName, String rejectValue) {
-        this.statusCode = statusCode;
-        this.message = message;
-        this.fieldName = fieldName;
-        this.rejectValue = rejectValue;
-    }
-
-    @Override
-    public String toString() {
-        return "StatusResponseDto{" +
-                "statusCode=" + statusCode +
-                ", message='" + message + '\'' +
-                ", fieldName='" + fieldName + '\'' +
-                ", rejectValue='" + rejectValue + '\'' +
-                '}';
-    }
+    private final String rejectValue;
 }

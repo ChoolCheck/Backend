@@ -2,7 +2,6 @@ package com.uhyeah.choolcheck.web.user.dto;
 
 import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.domain.enums.Authority;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

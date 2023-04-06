@@ -43,16 +43,7 @@ public class ScheduleService {
                         .rejectValue(scheduleSaveRequestDto.getEmployeeId().toString())
                         .build());
 
-        Hours hours = null;
-        if (scheduleSaveRequestDto.getHoursId() != null) {
-            hours = hoursRepository.findById(scheduleSaveRequestDto.getHoursId())
-                    .orElseThrow(() -> CustomException.builder()
-                            .statusCode(StatusCode.RESOURCE_NOT_FOUND)
-                            .message("존재하지 않는 근무형태입니다.")
-                            .fieldName("hoursId")
-                            .rejectValue(scheduleSaveRequestDto.getHoursId().toString())
-                            .build());
-        }
+        Hours hours = getHours(scheduleSaveRequestDto.getHoursId());
 
         scheduleRepository.save(scheduleSaveRequestDto.toEntity(employee, hours));
 
@@ -70,10 +61,6 @@ public class ScheduleService {
                         .build());
 
         Employee employee = schedule.getEmployee();
-        Hours hours = null;
-        System.out.println(hours);
-        System.out.println(scheduleUpdateRequestDto.getHoursId());
-
         if (!scheduleUpdateRequestDto.getEmployeeId().equals(employee.getId())) {
             employee = employeeRepository.findById(scheduleUpdateRequestDto.getEmployeeId())
                     .orElseThrow(() -> CustomException.builder()
@@ -84,16 +71,8 @@ public class ScheduleService {
                             .build());
         }
 
-        if (scheduleUpdateRequestDto.getHoursId() != null) {
-            hours = hoursRepository.findById(scheduleUpdateRequestDto.getHoursId())
-                    .orElseThrow(() -> CustomException.builder()
-                            .statusCode(StatusCode.RESOURCE_NOT_FOUND)
-                            .message("존재하지 않는 근무형태입니다.")
-                            .fieldName("hoursId")
-                            .rejectValue(scheduleUpdateRequestDto.getHoursId().toString())
-                            .build());
-
-        }
+        Hours hours = getHours(scheduleUpdateRequestDto.getHoursId());
+        
         schedule.update(employee, hours, scheduleUpdateRequestDto.getDate(), scheduleUpdateRequestDto.getStartTime(), scheduleUpdateRequestDto.getEndTime());
     }
 
@@ -163,5 +142,20 @@ public class ScheduleService {
         return scheduleRepository.findByDateBetween(customUserDetails.getUser(), start, end).stream()
                 .map(ScheduleResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+
+    private Hours getHours(Long hoursId) {
+
+        if (hoursId != null) {
+            return hoursRepository.findById(hoursId)
+                    .orElseThrow(() -> CustomException.builder()
+                            .statusCode(StatusCode.RESOURCE_NOT_FOUND)
+                            .message("존재하지 않는 근무형태입니다.")
+                            .fieldName("hoursId")
+                            .rejectValue(hoursId.toString())
+                            .build());
+        }
+        return null;
     }
 }

@@ -5,12 +5,14 @@ import com.uhyeah.choolcheck.domain.entity.Employee;
 import com.uhyeah.choolcheck.domain.entity.Hours;
 import com.uhyeah.choolcheck.domain.entity.Schedule;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Getter
+@NoArgsConstructor
 public class ScheduleSaveRequestDto {
 
     @NotNull(message = "직원id는 필수항목입니다.")

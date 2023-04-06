@@ -2,12 +2,14 @@ package com.uhyeah.choolcheck.web.content.schedule.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Getter
+@NoArgsConstructor
 public class ScheduleUpdateRequestDto {
 
     @NotNull(message = "직원id는 필수항목입니다.")

@@ -18,12 +18,14 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        setResponse(response, "유저 인증정보가 없습니다.");
+        setResponse(response);
     }
 
-    private void setResponse(HttpServletResponse response, String message) throws IOException {
+    private void setResponse(HttpServletResponse response) throws IOException {
 
-        log.error("[exceptionHandle] AuthenticationEntryPoint = {}", message);
+        final String ERROR_MESSAGE = "유저 인증정보가 없습니다.";
+
+        log.error("[exceptionHandle] AuthenticationEntryPoint = {}", ERROR_MESSAGE);
 
         StatusCode statusCode = StatusCode.UNAUTHORIZED_USER;
         ObjectMapper objectMapper = new ObjectMapper();
@@ -34,8 +36,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         StatusResponseDto statusResponseDto = StatusResponseDto.builder()
                 .statusCode(statusCode)
-                .message(message)
+                .message(ERROR_MESSAGE)
                 .build();
+
         response.getWriter().write(objectMapper.writeValueAsString(statusResponseDto));
     }
 }

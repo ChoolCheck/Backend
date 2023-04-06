@@ -1,6 +1,5 @@
 package com.uhyeah.choolcheck.web.statistics;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uhyeah.choolcheck.domain.entity.Employee;
 import com.uhyeah.choolcheck.domain.entity.Work;
 import com.uhyeah.choolcheck.domain.repository.EmployeeRepository;
@@ -24,14 +23,14 @@ public class StatisticsService {
     private final WorkRepository workRepository;
     private final EmployeeRepository employeeRepository;
 
+
     @Transactional(readOnly = true)
     public List<StatisticsResponseDto> getStatistics(LocalDate dateFrom, LocalDate dateTo, CustomUserDetails customUserDetails) {
 
         List<Employee> employeeList = employeeRepository.findByUser(customUserDetails.getUser());
-
         List<Work> workList = workRepository.findByDateBetween(customUserDetails.getUser(), dateFrom, dateTo);
-        List<StatisticsResponseDto> statisticsResponseDtoList = new ArrayList<>();
 
+        List<StatisticsResponseDto> statisticsResponseDtoList = new ArrayList<>();
         for (Employee employee : employeeList) {
 
             long totalTime = workList.stream()
@@ -48,7 +47,7 @@ public class StatisticsService {
         return statisticsResponseDtoList;
     }
 
-    public long calculateTime(LocalTime startTime, LocalTime endTime) {
+    private long calculateTime(LocalTime startTime, LocalTime endTime) {
 
         if (endTime.isBefore(startTime)) {
             return Duration.between(startTime, endTime).toHours() + 24;

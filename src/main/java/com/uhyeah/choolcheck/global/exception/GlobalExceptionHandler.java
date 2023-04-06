@@ -20,12 +20,13 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity handleCustomException(CustomException e) {
+    public ResponseEntity<StatusResponseDto> handleCustomException(CustomException e) {
 
         StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
                 .statusCode(e.getStatusCode())
@@ -35,23 +36,24 @@ public class GlobalExceptionHandler {
                 .build();
 
         log.error("[exceptionHandle] CustomException " + exceptionResponseDto.toString());
-        return new ResponseEntity(exceptionResponseDto, e.getStatusCode().getHttpStatus());
+
+        return ResponseEntity.status(e.getStatusCode().getHttpStatus()).body(exceptionResponseDto);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity handleValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<List<StatusResponseDto>> handleValidException(MethodArgumentNotValidException e) {
 
-        StatusCode statusCode = StatusCode.INVALID_PARAMETER;
+        final StatusCode statusCode = StatusCode.INVALID_PARAMETER;
         BindingResult bindingResult = e.getBindingResult();
 
-        List<StatusResponseDto> statusResponseDtoList = new ArrayList<>();
+        List<StatusResponseDto> exceptionResponseDtoList = new ArrayList<>();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
 
             String rejectValue = null;
             if (fieldError.getRejectedValue() != null) {
                 rejectValue = fieldError.getRejectedValue().toString();
             }
-            statusResponseDtoList.add(StatusResponseDto.builder()
+            exceptionResponseDtoList.add(StatusResponseDto.builder()
                     .statusCode(statusCode)
                     .message(fieldError.getDefaultMessage())
                     .fieldName(fieldError.getField())
@@ -59,15 +61,15 @@ public class GlobalExceptionHandler {
                     .build());
         }
 
-        log.error("[exceptionHandle] MethodArgumentNotValidException" + statusResponseDtoList.toString());
-        return new ResponseEntity(statusResponseDtoList, statusCode.getHttpStatus());
+        log.error("[exceptionHandle] MethodArgumentNotValidException" + exceptionResponseDtoList.toString());
+        return ResponseEntity.status(statusCode.getHttpStatus()).body(exceptionResponseDtoList);
     }
 
 
     @ExceptionHandler(InvalidFormatException.class)
-    public ResponseEntity handleInvalidFormatException(InvalidFormatException e) {
+    public ResponseEntity<StatusResponseDto> handleInvalidFormatException(InvalidFormatException e) {
 
-        StatusCode statusCode = StatusCode.INVALID_PARAMETER;
+        final StatusCode statusCode = StatusCode.INVALID_PARAMETER;
 
         StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
                 .statusCode(statusCode)
@@ -77,13 +79,14 @@ public class GlobalExceptionHandler {
                 .build();
 
         log.error("[exceptionHandle] InvalidFormatException = {}", exceptionResponseDto.toString());
-        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
+
+        return ResponseEntity.status(statusCode.getHttpStatus()).body(exceptionResponseDto);
     }
 
     @ExceptionHandler(DateTimeParseException.class)
-    public ResponseEntity handleDateTimeParseException(DateTimeParseException e) {
+    public ResponseEntity<StatusResponseDto> handleDateTimeParseException(DateTimeParseException e) {
 
-        StatusCode statusCode = StatusCode.INVALID_PARAMETER;
+        final StatusCode statusCode = StatusCode.INVALID_PARAMETER;
 
         StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
                 .statusCode(statusCode)
@@ -93,14 +96,15 @@ public class GlobalExceptionHandler {
                 .build();
 
         log.error("[exceptionHandle] InvalidFormatException = {}", exceptionResponseDto.toString());
-        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
+
+        return ResponseEntity.status(statusCode.getHttpStatus()).body(exceptionResponseDto);
     }
 
     //요청된 데이터와 정의된 데이터의 type이 다를 경우
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+    public ResponseEntity<StatusResponseDto> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
 
-        StatusCode statusCode = StatusCode.INVALID_PARAMETER;
+        final StatusCode statusCode = StatusCode.INVALID_PARAMETER;
 
         StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
                 .statusCode(statusCode)
@@ -110,14 +114,15 @@ public class GlobalExceptionHandler {
                 .build();
 
         log.error("[exceptionHandle] MethodArgumentTypeMismatchException = {}", exceptionResponseDto.toString());
-        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
+
+        return ResponseEntity.status(statusCode.getHttpStatus()).body(exceptionResponseDto);
     }
 
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity handleBadCredentialsException(BadCredentialsException e) {
+    public ResponseEntity<StatusResponseDto> handleBadCredentialsException(BadCredentialsException e) {
 
-        StatusCode statusCode = StatusCode.UNAUTHORIZED_USER;
+        final StatusCode statusCode = StatusCode.UNAUTHORIZED_USER;
         StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
                 .statusCode(statusCode)
                 .message("비밀번호가 일치하지 않습니다.")
@@ -125,13 +130,14 @@ public class GlobalExceptionHandler {
                 .build();
 
         log.error("[exceptionHandle] BadCredentialsException = {}", exceptionResponseDto.toString());
-        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
+
+        return ResponseEntity.status(statusCode.getHttpStatus()).body(exceptionResponseDto);
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity handleUsernameNotFoundException(UsernameNotFoundException e) {
+    public ResponseEntity<StatusResponseDto> handleUsernameNotFoundException(UsernameNotFoundException e) {
 
-        StatusCode statusCode = StatusCode.UNAUTHORIZED_USER;
+        final StatusCode statusCode = StatusCode.UNAUTHORIZED_USER;
         StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
                 .statusCode(statusCode)
                 .message("존재하지 않는 사용자 이메일입니다.")
@@ -139,34 +145,32 @@ public class GlobalExceptionHandler {
                 .build();
 
         log.error("[exceptionHandle] BadCredentialsException = {}", exceptionResponseDto.toString());
-        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
+
+        return ResponseEntity.status(statusCode.getHttpStatus()).body(exceptionResponseDto);
     }
 
-
-    @ExceptionHandler(JwtException.class)
-    public ResponseEntity handleJwtException(JwtException e) {
-
-        StatusCode statusCode = StatusCode.UNAUTHORIZED_USER;
-        String message = "JWT토큰 오류입니다.";
-
-        if (e.equals(MalformedJwtException.class)) {
-            message = "올바르지 않은 형식의 JWT토큰입니다.";
-        }
-        if (e.equals(ExpiredJwtException.class)) {
-            message = "만료된 JWT토큰입니다.";
-        }
-        if (e.equals(UnsupportedJwtException.class)) {
-            message = "지원하지않는 JWT토큰입니다.";
-        }
-
-        StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
-                .statusCode(statusCode)
-                .message(message)
-                .build();
-
-        log.error("[exceptionHandle] JwtException = {}", exceptionResponseDto.toString());
-        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
-    }
-
-
+//    @ExceptionHandler(JwtException.class)
+//    public ResponseEntity<StatusResponseDto> handleJwtException(JwtException e) {
+//
+//        final StatusCode statusCode = StatusCode.UNAUTHORIZED_USER;
+//        String message = "JWT토큰 오류입니다.";
+//
+//        if (e.equals(MalformedJwtException.class)) {
+//            message = "올바르지 않은 형식의 JWT토큰입니다.";
+//        }
+//        if (e.equals(ExpiredJwtException.class)) {
+//            message = "만료된 JWT토큰입니다.";
+//        }
+//        if (e.equals(UnsupportedJwtException.class)) {
+//            message = "지원하지않는 JWT토큰입니다.";
+//        }
+//
+//        StatusResponseDto exceptionResponseDto = StatusResponseDto.builder()
+//                .statusCode(statusCode)
+//                .message(message)
+//                .build();
+//
+//        log.error("[exceptionHandle] JwtException = {}", exceptionResponseDto.toString());
+//        return new ResponseEntity(exceptionResponseDto, statusCode.getHttpStatus());
+//    }
 }

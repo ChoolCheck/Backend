@@ -2,6 +2,8 @@ package com.uhyeah.choolcheck.web.content.schedule.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;
+import com.uhyeah.choolcheck.domain.entity.Employee;
+import com.uhyeah.choolcheck.domain.entity.Hours;
 import com.uhyeah.choolcheck.domain.entity.Schedule;
 import com.uhyeah.choolcheck.domain.enums.Color;
 import lombok.Getter;
@@ -12,36 +14,49 @@ import java.time.LocalTime;
 @Getter
 public class ScheduleResponseDto {
 
-    private Long id;
+    private final Long id;
 
-    private String name;
+    private final String name;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate date;
+    private final LocalDate date;
 
-    private LocalTime startTime;
+    private final LocalTime startTime;
 
-    private LocalTime endTime;
+    private final LocalTime endTime;
 
-    private String hours;
+    private final String hours;
 
-    private Color color;
+    private final Color color;
 
     @QueryProjection
     public ScheduleResponseDto(Schedule schedule) {
         this.id = schedule.getId();
-        this.name = schedule.getEmployee().getName();
+        this.name = getEmployeeName(schedule.getEmployee());
         this.date = schedule.getDate();
         this.startTime = schedule.getStartTime();
         this.endTime = schedule.getEndTime();
+        this.hours = getHoursTitle(schedule.getHours());
         this.color = schedule.getEmployee().getColor();
+    }
 
-        if (schedule.getHours() != null) {
-            this.hours = schedule.getHours().getTitle();
-        }
 
-        if (schedule.getEmployee().isDelFlag()) {
+    private String getEmployeeName(Employee employee) {
+
+        String name = employee.getName();
+
+        if (employee.isDelFlag()) {
             name += "(X)";
         }
+        return name;
+    }
+
+
+    private String getHoursTitle(Hours hours) {
+
+        if (hours != null) {
+            return hours.getTitle();
+        }
+        return null;
     }
 }

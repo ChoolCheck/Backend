@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.uhyeah.choolcheck.domain.entity.Memo;
 import com.uhyeah.choolcheck.domain.entity.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
 @Getter
+@NoArgsConstructor
 public class MemoSaveRequestDto {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
