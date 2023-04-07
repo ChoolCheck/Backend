@@ -36,8 +36,8 @@ public class JwtTokenProvider {
     private static final String REFRESH_TOKEN_SUBJECT = "refresh";
     private static final String MAIL_TOKEN_SUBJECT = "mail";
 
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 1;
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 3;
     private static final long MAIL_TOKEN_EXPIRE_TIME = 1000 * 60 * 10;
 
     private final Key key;
