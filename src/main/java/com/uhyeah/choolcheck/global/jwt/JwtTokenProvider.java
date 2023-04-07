@@ -73,6 +73,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(MAIL_TOKEN_SUBJECT)
                 .setAudience(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
                 .setExpiration(tokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
