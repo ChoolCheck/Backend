@@ -68,6 +68,7 @@ public class JwtTokenProvider {
     public String issueMailToken(Authentication authentication) {
 
         Date tokenExpiresIn = getTokenExpiresIn(MAIL_TOKEN_EXPIRE_TIME);
+        String authorities = getAuthorities(authentication);
 
         return Jwts.builder()
                 .setSubject(MAIL_TOKEN_SUBJECT)
@@ -81,10 +82,7 @@ public class JwtTokenProvider {
     private String issueAccessToken(Authentication authentication) {
 
         Date tokenExpiresIn = getTokenExpiresIn(ACCESS_TOKEN_EXPIRE_TIME);
-
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+        String authorities = getAuthorities(authentication);
 
         return Jwts.builder()
                 .setSubject(ACCESS_TOKEN_SUBJECT)
@@ -114,15 +112,9 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(accessToken);
         String email = redisService.get(refreshToken);
 
-        if(email == null) {
-            log.info("expired refreshToken");
-            throw CustomException.builder()
-                    .statusCode(StatusCode.UNAUTHORIZED_USER)
-                    .message("만료된 refreshToken 입니다.")
-                    .build();
+        validateToken(refreshToken);
 
-        }
-        if (!email.equals(claims.getSubject())) {
+        if (email != null && !email.equals(claims.getAudience())) {
             throw CustomException.builder()
                     .statusCode(StatusCode.UNAUTHORIZED_USER)
                     .message("refreshToken이 일치하지 않습니다.")
@@ -180,9 +172,12 @@ public class JwtTokenProvider {
                     .build();
 
         } catch (ExpiredJwtException e) {
+
+            String message = e.getClaims().getSubject() + " token expired";
+
             throw CustomException.builder()
                     .statusCode(StatusCode.UNAUTHORIZED_USER)
-                    .message("expired")
+                    .message(message)
                     .build();
 
         } catch (UnsupportedJwtException e) {
@@ -223,4 +218,11 @@ public class JwtTokenProvider {
         return new Date(now + tokenExpireTime);
     }
 
+
+    private String getAuthorities(Authentication authentication) {
+
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+    }
 }
