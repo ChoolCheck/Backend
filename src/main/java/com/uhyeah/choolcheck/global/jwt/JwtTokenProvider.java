@@ -28,9 +28,13 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenProvider {
 
-    private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "bearer";
-    public static final String BEARER_PREFIX = "Bearer";
+    private static final String BEARER_PREFIX = "Bearer";
+    private static final String AUTHORITIES_KEY = "auth";
+
+    private static final String ACCESS_TOKEN_SUBJECT = "access";
+    private static final String REFRESH_TOKEN_SUBJECT = "refresh";
+    private static final String MAIL_TOKEN_SUBJECT = "mail";
 
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;
@@ -47,52 +51,70 @@ public class JwtTokenProvider {
         this.redisService = redisService;
     }
 
-    public String issueAccessToken(Authentication authentication) {
 
-        long now = (new Date()).getTime();
-        Date tokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
+    public TokenResponseDto generateTokenDto(Authentication authentication) {
+
+        String accessToken = issueAccessToken(authentication);
+        String refreshToken = issueRefreshToken();
+
+        return TokenResponseDto.builder()
+                .grantType(BEARER_TYPE)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+
+    public String issueMailToken(Authentication authentication) {
+
+        Date tokenExpiresIn = getTokenExpiresIn(MAIL_TOKEN_EXPIRE_TIME);
+
+        return Jwts.builder()
+                .setSubject(MAIL_TOKEN_SUBJECT)
+                .setAudience(authentication.getName())
+                .setExpiration(tokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+
+    private String issueAccessToken(Authentication authentication) {
+
+        Date tokenExpiresIn = getTokenExpiresIn(ACCESS_TOKEN_EXPIRE_TIME);
 
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
         return Jwts.builder()
-                .setSubject(authentication.getName())
+                .setSubject(ACCESS_TOKEN_SUBJECT)
+                .setAudience(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
                 .setExpiration(tokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public String issueRefreshToken(Authentication authentication) {
 
-        long now = (new Date()).getTime();
-        Date tokenExpiresIn = new Date(now + REFRESH_TOKEN_EXPIRE_TIME);
+    private String issueRefreshToken() {
+
+        Date tokenExpiresIn = getTokenExpiresIn(REFRESH_TOKEN_EXPIRE_TIME);
 
         return Jwts.builder()
+                .setSubject(REFRESH_TOKEN_SUBJECT)
                 .setExpiration(tokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public String issueMailToken(Authentication authentication) {
 
-        long now = (new Date()).getTime();
-        Date tokenExpiresIn = new Date(now + MAIL_TOKEN_EXPIRE_TIME);
-
-        return Jwts.builder()
-                .setSubject(authentication.getName())
-                .setExpiration(tokenExpiresIn)
-                .signWith(key, SignatureAlgorithm.HS512)
-                .compact();
-    }
 
     public TokenResponseDto reissueAccessToken(String accessToken, String refreshToken) {
 
         Claims claims = parseClaims(accessToken);
-        String refreshTokenRedis = redisService.get(claims.getSubject());
+        String email = redisService.get(refreshToken);
 
-        if(refreshTokenRedis == null) {
+        if(email == null) {
             log.info("expired refreshToken");
             throw CustomException.builder()
                     .statusCode(StatusCode.UNAUTHORIZED_USER)
@@ -100,7 +122,7 @@ public class JwtTokenProvider {
                     .build();
 
         }
-        if (!refreshTokenRedis.equals(refreshToken)) {
+        if (!email.equals(claims.getSubject())) {
             throw CustomException.builder()
                     .statusCode(StatusCode.UNAUTHORIZED_USER)
                     .message("refreshToken이 일치하지 않습니다.")
@@ -119,18 +141,6 @@ public class JwtTokenProvider {
 
     }
 
-    public TokenResponseDto generateTokenDto(Authentication authentication) {
-
-        String accessToken = issueAccessToken(authentication);
-        String refreshToken = issueRefreshToken(authentication);
-
-        return TokenResponseDto.builder()
-                 .grantType(BEARER_TYPE)
-                 .accessToken(accessToken)
-                 .refreshToken(refreshToken)
-                 .build();
-    }
-
 
     public Authentication getAuthentication(String token) {
 
@@ -145,7 +155,7 @@ public class JwtTokenProvider {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        UserDetails principal = customUserDetailsService.loadUserByUsername(claims.getSubject());
+        UserDetails principal = customUserDetailsService.loadUserByUsername(claims.getAudience());
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
@@ -189,10 +199,10 @@ public class JwtTokenProvider {
         }
     }
 
-    public Claims parseClaims(String accessToken) {
+    private Claims parseClaims(String token) {
 
         try {
-            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
@@ -205,6 +215,12 @@ public class JwtTokenProvider {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+
+    private Date getTokenExpiresIn(long tokenExpireTime) {
+        long now = (new Date()).getTime();
+        return new Date(now + tokenExpireTime);
     }
 
 }
