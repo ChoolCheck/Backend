@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 
-        final String[] excludePath = {"/user/signup", "/user/email", "/user/login", "/user/reissue"};
+        final String[] excludePath = {"/aws", "/user/signup", "/user/email", "/user/login", "/user/reissue"};
         String path = request.getRequestURI();
 
         return Arrays.stream(excludePath).anyMatch(path::startsWith);
