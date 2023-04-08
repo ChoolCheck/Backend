@@ -38,7 +38,7 @@ public class JwtTokenProvider {
 
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 1;
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 3;
-    private static final long MAIL_TOKEN_EXPIRE_TIME = 1000 * 60 * 10;
+    private static final long MAIL_TOKEN_EXPIRE_TIME = 1000 * 60 * 5;
 
     private final Key key;
     private final CustomUserDetailsService customUserDetailsService;
