@@ -69,13 +69,14 @@ public class UserService {
 
         long expiration = tokenProvider.getExpiration(tokenResponseDto.getRefreshToken());
         redisService.set(tokenResponseDto.getRefreshToken(), ip, Duration.ofMillis(expiration));
+        System.out.println(ip);
 
         return tokenResponseDto;
     }
 
 
     public TokenResponseDto reissue(String accessToken, String refreshToken, String ip) {
-
+        System.out.println(ip);
         return tokenProvider.reissueAccessToken(accessToken, refreshToken, ip);
     }
 
