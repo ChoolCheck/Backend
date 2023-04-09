@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RequiredArgsConstructor
@@ -33,16 +34,16 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody UserLoginRequestDto userLoginRequestDto) {
+    public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody UserLoginRequestDto userLoginRequestDto, HttpServletRequest request) {
 
-        return ResponseEntity.ok(userService.login(userLoginRequestDto));
+        return ResponseEntity.ok(userService.login(userLoginRequestDto, request.getRemoteAddr()));
     }
 
 
     @PostMapping("/reissue")
-    public ResponseEntity<TokenResponseDto> reissue (@RequestHeader(value = "accessToken") String accessToken, @RequestHeader(value = "refreshToken") String refreshToken) {
+    public ResponseEntity<TokenResponseDto> reissue (@RequestHeader(value = "accessToken") String accessToken, @RequestHeader(value = "refreshToken") String refreshToken, HttpServletRequest request) {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.reissue(accessToken, refreshToken));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.reissue(accessToken, refreshToken, request.getRemoteAddr()));
     }
 
 

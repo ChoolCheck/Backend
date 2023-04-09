@@ -61,22 +61,22 @@ public class UserService {
 
 
     @Transactional(readOnly = true)
-    public TokenResponseDto login(UserLoginRequestDto userLoginRequestDto) {
+    public TokenResponseDto login(UserLoginRequestDto userLoginRequestDto, String ip) {
 
         UsernamePasswordAuthenticationToken authenticationToken = userLoginRequestDto.toAuthentication();
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
         TokenResponseDto tokenResponseDto = tokenProvider.generateTokenDto(authentication);
 
         long expiration = tokenProvider.getExpiration(tokenResponseDto.getRefreshToken());
-        redisService.set(tokenResponseDto.getRefreshToken(), userLoginRequestDto.getEmail(), Duration.ofMillis(expiration));
+        redisService.set(tokenResponseDto.getRefreshToken(), ip, Duration.ofMillis(expiration));
 
         return tokenResponseDto;
     }
 
 
-    public TokenResponseDto reissue(String accessToken, String refreshToken) {
+    public TokenResponseDto reissue(String accessToken, String refreshToken, String ip) {
 
-        return tokenProvider.reissueAccessToken(accessToken, refreshToken);
+        return tokenProvider.reissueAccessToken(accessToken, refreshToken, ip);
     }
 
 

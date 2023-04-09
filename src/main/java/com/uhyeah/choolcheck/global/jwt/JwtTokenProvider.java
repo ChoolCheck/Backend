@@ -108,14 +108,13 @@ public class JwtTokenProvider {
 
 
 
-    public TokenResponseDto reissueAccessToken(String accessToken, String refreshToken) {
+    public TokenResponseDto reissueAccessToken(String accessToken, String refreshToken, String reissueIp) {
 
-        Claims claims = parseClaims(accessToken);
-        String email = redisService.get(refreshToken);
+        String ip = redisService.get(refreshToken);
 
         validateToken(refreshToken);
 
-        if (email != null && !email.equals(claims.getAudience())) {
+        if (ip != null && !ip.equals(reissueIp)) {
             throw CustomException.builder()
                     .statusCode(StatusCode.UNAUTHORIZED_USER)
                     .message("refreshToken이 일치하지 않습니다.")
@@ -124,7 +123,6 @@ public class JwtTokenProvider {
 
         Authentication authentication = getAuthentication(accessToken);
         String newAccessToken = issueAccessToken(authentication);
-        log.info("reissue accessToken");
 
         return TokenResponseDto.builder()
                 .grantType(BEARER_TYPE)
