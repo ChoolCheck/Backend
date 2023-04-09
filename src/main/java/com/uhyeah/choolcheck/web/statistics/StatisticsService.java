@@ -1,6 +1,7 @@
 package com.uhyeah.choolcheck.web.statistics;
 
 import com.uhyeah.choolcheck.domain.entity.Employee;
+import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.domain.entity.Work;
 import com.uhyeah.choolcheck.domain.repository.EmployeeRepository;
 import com.uhyeah.choolcheck.domain.repository.WorkRepository;
@@ -25,18 +26,15 @@ public class StatisticsService {
 
 
     @Transactional(readOnly = true)
-    public List<StatisticsResponseDto> getStatistics(LocalDate dateFrom, LocalDate dateTo, CustomUserDetails customUserDetails) {
+    public List<StatisticsResponseDto> getStatistics(LocalDate dateFrom, LocalDate dateTo, User loginUser) {
 
-        List<Employee> employeeList = employeeRepository.findByUser(customUserDetails.getUser());
-        List<Work> workList = workRepository.findByDateBetween(customUserDetails.getUser(), dateFrom, dateTo);
+        List<Employee> employeeList = employeeRepository.findByUser(loginUser);
+        List<Work> workList = workRepository.findByDateBetween(loginUser, dateFrom, dateTo);
 
         List<StatisticsResponseDto> statisticsResponseDtoList = new ArrayList<>();
         for (Employee employee : employeeList) {
 
-            long totalTime = workList.stream()
-                    .filter(work -> work.getEmployee().equals(employee))
-                    .mapToLong(work -> calculateTime(work.getStartTime(), work.getEndTime()))
-                    .sum();
+            long totalTime = getTotalTime(workList, employee);
 
             statisticsResponseDtoList.add(StatisticsResponseDto.builder()
                     .name(employee.getName())
@@ -47,6 +45,7 @@ public class StatisticsService {
         return statisticsResponseDtoList;
     }
 
+
     private long calculateTime(LocalTime startTime, LocalTime endTime) {
 
         if (endTime.isBefore(startTime)) {
@@ -55,5 +54,14 @@ public class StatisticsService {
         else {
             return Duration.between(startTime, endTime).toHours();
         }
+    }
+
+
+    private long getTotalTime(List<Work> workList, Employee employee) {
+
+        return workList.stream()
+                .filter(work -> work.getEmployee().equals(employee))
+                .mapToLong(work -> calculateTime(work.getStartTime(), work.getEndTime()))
+                .sum();
     }
 }

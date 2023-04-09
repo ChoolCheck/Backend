@@ -27,17 +27,17 @@ public class WorkController {
 
 
     @PostMapping
-    public ResponseEntity<Object> save(@Valid @RequestBody WorkSaveRequestDto workSaveRequestDto) {
+    public ResponseEntity<Object> save(@Valid @RequestBody WorkSaveRequestDto requestDto) {
 
-        workService.save(workSaveRequestDto);
+        workService.save(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody WorkUpdateRequestDto workUpdateRequestDto) {
+    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody WorkUpdateRequestDto requestDto) {
 
-        workService.update(id, workUpdateRequestDto);
+        workService.update(id, requestDto);
         return ResponseEntity.ok().build();
     }
 
@@ -60,7 +60,7 @@ public class WorkController {
     @GetMapping("/month")
     public ResponseEntity<List<WorkResponseDto>> getWorkCalendar(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return ResponseEntity.ok(workService.getWorkCalendar(date, customUserDetails));
+        return ResponseEntity.ok(workService.getWorkCalendar(date, customUserDetails.getUser()));
     }
 
 
@@ -69,6 +69,6 @@ public class WorkController {
                                                              @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateTo, @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                              @PageableDefault(size=10) Pageable pageable) {
 
-        return ResponseEntity.ok(workService.getWorkList(customUserDetails, employeeId, dateFrom, dateTo, pageable));
+        return ResponseEntity.ok(workService.getWorkList(customUserDetails.getUser(), employeeId, dateFrom, dateTo, pageable));
     }
 }

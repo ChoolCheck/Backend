@@ -20,9 +20,9 @@ public class HoursController {
     private final HoursService hoursService;
 
     @PostMapping()
-    public ResponseEntity<Object> save(@Valid @RequestBody HoursSaveRequestDto hoursSaveRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<Object> save(@Valid @RequestBody HoursSaveRequestDto requestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        hoursService.save(hoursSaveRequestDto, customUserDetails);
+        hoursService.save(requestDto, customUserDetails.getUser());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -42,7 +42,7 @@ public class HoursController {
     @GetMapping()
     public ResponseEntity<List<HoursResponseDto>> getHoursList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return ResponseEntity.ok(hoursService.getHoursList(customUserDetails));
+        return ResponseEntity.ok(hoursService.getHoursList(customUserDetails.getUser()));
     }
 
 

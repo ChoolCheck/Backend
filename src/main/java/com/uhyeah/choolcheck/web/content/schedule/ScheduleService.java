@@ -3,6 +3,7 @@ package com.uhyeah.choolcheck.web.content.schedule;
 import com.uhyeah.choolcheck.domain.entity.Employee;
 import com.uhyeah.choolcheck.domain.entity.Hours;
 import com.uhyeah.choolcheck.domain.entity.Schedule;
+import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.domain.repository.EmployeeRepository;
 import com.uhyeah.choolcheck.domain.repository.HoursRepository;
 import com.uhyeah.choolcheck.domain.repository.ScheduleRepository;
@@ -11,7 +12,6 @@ import com.uhyeah.choolcheck.web.content.schedule.dto.ScheduleSaveRequestDto;
 import com.uhyeah.choolcheck.web.content.schedule.dto.ScheduleUpdateRequestDto;
 import com.uhyeah.choolcheck.global.exception.CustomException;
 import com.uhyeah.choolcheck.global.exception.StatusCode;
-import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,24 +33,24 @@ public class ScheduleService {
     private final HoursRepository hoursRepository;
 
     @Transactional
-    public void save(ScheduleSaveRequestDto scheduleSaveRequestDto) {
+    public void save(ScheduleSaveRequestDto requestDto) {
 
-        Employee employee = employeeRepository.findById(scheduleSaveRequestDto.getEmployeeId())
+        Employee employee = employeeRepository.findById(requestDto.getEmployeeId())
                 .orElseThrow(() -> CustomException.builder()
                         .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                         .message("존재하지 않는 직원입니다.")
                         .fieldName("employeeId")
-                        .rejectValue(scheduleSaveRequestDto.getEmployeeId().toString())
+                        .rejectValue(requestDto.getEmployeeId().toString())
                         .build());
 
-        Hours hours = getHours(scheduleSaveRequestDto.getHoursId());
+        Hours hours = getHours(requestDto.getHoursId());
 
-        scheduleRepository.save(scheduleSaveRequestDto.toEntity(employee, hours));
+        scheduleRepository.save(requestDto.toEntity(employee, hours));
 
     }
 
     @Transactional
-    public void update(Long id, ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
+    public void update(Long id, ScheduleUpdateRequestDto requestDto) {
 
         Schedule schedule = scheduleRepository.findById(id)
                 .orElseThrow(() -> CustomException.builder()
@@ -61,20 +61,21 @@ public class ScheduleService {
                         .build());
 
         Employee employee = schedule.getEmployee();
-        if (!scheduleUpdateRequestDto.getEmployeeId().equals(employee.getId())) {
-            employee = employeeRepository.findById(scheduleUpdateRequestDto.getEmployeeId())
+        if (!requestDto.getEmployeeId().equals(employee.getId())) {
+            employee = employeeRepository.findById(requestDto.getEmployeeId())
                     .orElseThrow(() -> CustomException.builder()
                             .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                             .message("존재하지 않는 직원입니다.")
                             .fieldName("employeeId")
-                            .rejectValue(scheduleUpdateRequestDto.getEmployeeId().toString())
+                            .rejectValue(requestDto.getEmployeeId().toString())
                             .build());
         }
 
-        Hours hours = getHours(scheduleUpdateRequestDto.getHoursId());
+        Hours hours = getHours(requestDto.getHoursId());
         
-        schedule.update(employee, hours, scheduleUpdateRequestDto.getDate(), scheduleUpdateRequestDto.getStartTime(), scheduleUpdateRequestDto.getEndTime());
+        schedule.update(employee, hours, requestDto.getDate(), requestDto.getStartTime(), requestDto.getEndTime());
     }
+
 
     @Transactional
     public void delete(Long id) {
@@ -90,6 +91,7 @@ public class ScheduleService {
         scheduleRepository.delete(schedule);
 
     }
+
 
     @Transactional(readOnly = true)
     public ScheduleResponseDto getSchedule(Long id) {
@@ -107,13 +109,22 @@ public class ScheduleService {
 
 
     @Transactional(readOnly = true)
-    public List<List<ScheduleResponseDto>> getScheduleByWeek(CustomUserDetails customUserDetails) {
+    public Page<ScheduleResponseDto> getScheduleList(User loginUser, Long employeeId, LocalDate dateFrom, LocalDate dateTo, Pageable pageable) {
 
-        LocalDate now = LocalDate.now();
-        LocalDate start = now.with(DayOfWeek.MONDAY);
-        LocalDate end = now.with(DayOfWeek.SUNDAY);
+        return scheduleRepository.findByUserAndPeriodAndEmployee(loginUser, dateFrom, dateTo, employeeId, pageable)
+                .map(ScheduleResponseDto::new);
+    }
 
-        List<Schedule> scheduleList = scheduleRepository.findByDateBetween(customUserDetails.getUser(), start, end);
+
+    @Transactional(readOnly = true)
+    public List<List<ScheduleResponseDto>> getScheduleByWeek(User loginUser) {
+
+        final LocalDate now = LocalDate.now();
+        final LocalDate start = now.with(DayOfWeek.MONDAY);
+        final LocalDate end = now.with(DayOfWeek.SUNDAY);
+
+        List<Schedule> scheduleList = scheduleRepository.findByDateBetween(loginUser, start, end);
+
         List<List<ScheduleResponseDto>> scheduleResponseDtoList  = new ArrayList<>();
         for (int i=0; i<7; i++) {
             LocalDate date = start.plusDays(i);
@@ -126,20 +137,14 @@ public class ScheduleService {
         return scheduleResponseDtoList;
     }
 
-    @Transactional(readOnly = true)
-    public Page<ScheduleResponseDto> getScheduleList(CustomUserDetails customUserDetails, Long employeeId, LocalDate dateFrom, LocalDate dateTo, Pageable pageable) {
-
-        return scheduleRepository.findByUserAndPeriodAndEmployee(customUserDetails.getUser(), dateFrom, dateTo, employeeId, pageable)
-                .map(ScheduleResponseDto::new);
-    }
 
     @Transactional(readOnly = true)
-    public List<ScheduleResponseDto> getScheduleCalendar(LocalDate date, CustomUserDetails customUserDetails) {
+    public List<ScheduleResponseDto> getScheduleCalendar(LocalDate date, User loginUser) {
 
-        LocalDate start = LocalDate.now();
-        LocalDate end = date.withDayOfMonth(date.lengthOfMonth());
+        final LocalDate start = LocalDate.now();
+        final LocalDate end = date.withDayOfMonth(date.lengthOfMonth());
 
-        return scheduleRepository.findByDateBetween(customUserDetails.getUser(), start, end).stream()
+        return scheduleRepository.findByDateBetween(loginUser, start, end).stream()
                 .map(ScheduleResponseDto::new)
                 .collect(Collectors.toList());
     }

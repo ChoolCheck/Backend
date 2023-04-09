@@ -27,6 +27,6 @@ public class StatisticsController {
                                                                      @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateTo,
                                                                      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return ResponseEntity.ok(statisticsService.getStatistics(dateFrom, dateTo, customUserDetails));
+        return ResponseEntity.ok(statisticsService.getStatistics(dateFrom, dateTo, customUserDetails.getUser()));
     }
 }

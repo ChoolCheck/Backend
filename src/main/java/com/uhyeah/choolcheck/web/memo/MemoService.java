@@ -1,13 +1,13 @@
 package com.uhyeah.choolcheck.web.memo;
 
 import com.uhyeah.choolcheck.domain.entity.Memo;
+import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.domain.repository.MemoRepository;
 import com.uhyeah.choolcheck.global.exception.CustomException;
 import com.uhyeah.choolcheck.global.exception.StatusCode;
 import com.uhyeah.choolcheck.web.memo.dto.MemoResponseDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoSaveRequestDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoUpdateRequestDto;
-import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,13 +23,13 @@ public class MemoService {
     private final MemoRepository memoRepository;
 
     @Transactional
-    public void save(MemoSaveRequestDto memoSaveRequestDto, CustomUserDetails customUserDetails) {
+    public void save(MemoSaveRequestDto requestDto, User loginUser) {
 
-        memoRepository.save(memoSaveRequestDto.toEntity(customUserDetails.getUser()));
+        memoRepository.save(requestDto.toEntity(loginUser));
     }
 
     @Transactional
-    public void update(Long id, MemoUpdateRequestDto memoUpdateRequestDto) {
+    public void update(Long id, MemoUpdateRequestDto requestDto) {
 
         Memo memo = memoRepository.findById(id)
                 .orElseThrow(() -> CustomException.builder()
@@ -39,7 +39,7 @@ public class MemoService {
                         .rejectValue(id.toString())
                         .build());
 
-        memo.update(memoUpdateRequestDto.getDate(), memoUpdateRequestDto.getContent());
+        memo.update(requestDto.getDate(), requestDto.getContent());
     }
 
     @Transactional
@@ -70,9 +70,9 @@ public class MemoService {
     }
 
     @Transactional(readOnly = true)
-    public List<MemoResponseDto> getMemoByDate(LocalDate date, CustomUserDetails customUserDetails) {
+    public List<MemoResponseDto> getMemoByDate(LocalDate date, User loginUser) {
 
-        return memoRepository.findByUserAndDate(customUserDetails.getUser(), date).stream()
+        return memoRepository.findByUserAndDate(loginUser, date).stream()
                 .map(MemoResponseDto::new)
                 .collect(Collectors.toList());
     }
