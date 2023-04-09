@@ -36,6 +36,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody UserLoginRequestDto userLoginRequestDto, HttpServletRequest request) {
 
+        System.out.println(request.getHeader("X-FORWARDED-FOR"));
         return ResponseEntity.ok(userService.login(userLoginRequestDto, request.getRemoteAddr()));
     }
 
