@@ -37,7 +37,7 @@ public class UserController {
     public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody UserLoginRequestDto userLoginRequestDto, @RequestHeader("X-FORWARDED-FOR") String ip) {
 
         System.out.println(ip);
-        return ResponseEntity.ok(userService.login(userLoginRequestDto,));
+        return ResponseEntity.ok(userService.login(userLoginRequestDto, ip));
     }
 
 
