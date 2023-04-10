@@ -27,17 +27,17 @@ public class ScheduleController {
 
 
     @PostMapping
-    public ResponseEntity<Object> save(@Valid @RequestBody ScheduleSaveRequestDto scheduleSaveRequestDto) {
+    public ResponseEntity<Object> save(@Valid @RequestBody ScheduleSaveRequestDto requestDto) {
 
-        scheduleService.save(scheduleSaveRequestDto);
+        scheduleService.save(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
+    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody ScheduleUpdateRequestDto requestDto) {
 
-        scheduleService.update(id, scheduleUpdateRequestDto);
+        scheduleService.update(id, requestDto);
         return ResponseEntity.ok().build();
     }
 
@@ -60,14 +60,14 @@ public class ScheduleController {
     @GetMapping("/month")
     public ResponseEntity<List<ScheduleResponseDto>> getScheduleCalendar(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return ResponseEntity.ok(scheduleService.getScheduleCalendar(date, customUserDetails));
+        return ResponseEntity.ok(scheduleService.getScheduleCalendar(date, customUserDetails.getUser()));
     }
 
 
     @GetMapping("/week")
     public ResponseEntity<List<List<ScheduleResponseDto>>> getScheduleByWeek(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return ResponseEntity.ok(scheduleService.getScheduleByWeek(customUserDetails));
+        return ResponseEntity.ok(scheduleService.getScheduleByWeek(customUserDetails.getUser()));
     }
 
     @GetMapping()
@@ -75,6 +75,6 @@ public class ScheduleController {
                                                                      @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateTo, @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                                      @PageableDefault(size=10) Pageable pageable) {
 
-        return ResponseEntity.ok(scheduleService.getScheduleList(customUserDetails, employeeId, dateFrom, dateTo, pageable));
+        return ResponseEntity.ok(scheduleService.getScheduleList(customUserDetails.getUser(), employeeId, dateFrom, dateTo, pageable));
     }
 }

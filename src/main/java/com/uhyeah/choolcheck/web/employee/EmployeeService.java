@@ -9,7 +9,6 @@ import com.uhyeah.choolcheck.web.employee.dto.EmployeeSaveRequestDto;
 import com.uhyeah.choolcheck.web.employee.dto.EmployeeUpdateRequestDto;
 import com.uhyeah.choolcheck.global.exception.CustomException;
 import com.uhyeah.choolcheck.global.exception.StatusCode;
-import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,15 +24,15 @@ public class EmployeeService {
 
 
     @Transactional
-    public void save(EmployeeSaveRequestDto employeeSaveRequestDto, CustomUserDetails customUserDetails) {
+    public void save(EmployeeSaveRequestDto requestDto, User loginUser) {
 
-        checkNameAndColorDuplication(employeeSaveRequestDto.getName(), employeeSaveRequestDto.getColor(), customUserDetails.getUser());
-        employeeRepository.save(employeeSaveRequestDto.toEntity(customUserDetails.getUser()));
+        checkNameAndColorDuplication(requestDto.getName(), requestDto.getColor(), loginUser);
+        employeeRepository.save(requestDto.toEntity(loginUser));
     }
 
 
     @Transactional
-    public void update(Long id, EmployeeUpdateRequestDto employeeUpdateReqestDto, CustomUserDetails customUserDetails) {
+    public void update(Long id, EmployeeUpdateRequestDto requestDto, User loginUser) {
 
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> CustomException.builder()
@@ -43,11 +42,11 @@ public class EmployeeService {
                         .rejectValue(id.toString())
                         .build());
 
-        if (employee.getColor() != employeeUpdateReqestDto.getColor()) {
-            checkNameAndColorDuplication(employeeUpdateReqestDto.getName(), employeeUpdateReqestDto.getColor(), customUserDetails.getUser());
+        if (employee.getColor() != requestDto.getColor()) {
+            checkNameAndColorDuplication(requestDto.getName(), requestDto.getColor(), loginUser);
         }
 
-        employee.update(employeeUpdateReqestDto.getName(), employeeUpdateReqestDto.getRole(), employeeUpdateReqestDto.getColor());
+        employee.update(requestDto.getName(), requestDto.getRole(), requestDto.getColor());
     }
 
 
@@ -80,9 +79,9 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public List<EmployeeResponseDto> getEmployeeList(CustomUserDetails customUserDetails) {
+    public List<EmployeeResponseDto> getEmployeeList(User loginUser) {
 
-        return employeeRepository.findByUserAndDelFlagFalse(customUserDetails.getUser()).stream()
+        return employeeRepository.findByUserAndDelFlagFalse(loginUser).stream()
                 .map(EmployeeResponseDto::new)
                 .collect(Collectors.toList());
     }

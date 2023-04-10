@@ -23,16 +23,16 @@ public class MemoController {
     public final MemoService memoService;
 
     @PostMapping
-    public ResponseEntity<Object> save(@Valid @RequestBody MemoSaveRequestDto memoSaveRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<Object> save(@Valid @RequestBody MemoSaveRequestDto requestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        memoService.save(memoSaveRequestDto, customUserDetails);
+        memoService.save(requestDto, customUserDetails.getUser());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody MemoUpdateRequestDto memoUpdateRequestDto) {
+    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody MemoUpdateRequestDto requestDto) {
 
-        memoService.update(id, memoUpdateRequestDto);
+        memoService.update(id, requestDto);
         return ResponseEntity.ok().build();
     }
 
@@ -52,7 +52,7 @@ public class MemoController {
     @GetMapping()
     public ResponseEntity<List<MemoResponseDto>> getMemoByDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return ResponseEntity.ok(memoService.getMemoByDate(date, customUserDetails));
+        return ResponseEntity.ok(memoService.getMemoByDate(date, customUserDetails.getUser()));
     }
 
 }

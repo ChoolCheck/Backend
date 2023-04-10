@@ -21,17 +21,17 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping
-    public ResponseEntity<Object> save(@Valid @RequestBody EmployeeSaveRequestDto employeeSaveRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<Object> save(@Valid @RequestBody EmployeeSaveRequestDto requestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        employeeService.save(employeeSaveRequestDto, customUserDetails);
+        employeeService.save(requestDto, customUserDetails.getUser());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody EmployeeUpdateRequestDto employeeUpdateRequestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody EmployeeUpdateRequestDto requestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        employeeService.update(id, employeeUpdateRequestDto, customUserDetails);
+        employeeService.update(id, requestDto, customUserDetails.getUser());
         return ResponseEntity.ok().build();
     }
 
@@ -53,6 +53,6 @@ public class EmployeeController {
     @GetMapping()
     public ResponseEntity<List<EmployeeResponseDto>> getEmployeeList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return ResponseEntity.ok(employeeService.getEmployeeList(customUserDetails));
+        return ResponseEntity.ok(employeeService.getEmployeeList(customUserDetails.getUser()));
     }
 }

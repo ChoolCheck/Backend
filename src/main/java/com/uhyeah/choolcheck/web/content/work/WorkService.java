@@ -2,6 +2,7 @@ package com.uhyeah.choolcheck.web.content.work;
 
 import com.uhyeah.choolcheck.domain.entity.Employee;
 import com.uhyeah.choolcheck.domain.entity.Hours;
+import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.domain.entity.Work;
 import com.uhyeah.choolcheck.domain.repository.EmployeeRepository;
 import com.uhyeah.choolcheck.domain.repository.HoursRepository;
@@ -11,7 +12,6 @@ import com.uhyeah.choolcheck.web.content.work.dto.WorkUpdateRequestDto;
 import com.uhyeah.choolcheck.global.exception.CustomException;
 import com.uhyeah.choolcheck.global.exception.StatusCode;
 import com.uhyeah.choolcheck.web.content.work.dto.WorkSaveRequestDto;
-import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,25 +31,26 @@ public class WorkService {
     private final EmployeeRepository employeeRepository;
     private final HoursRepository hoursRepository;
 
-    @Transactional
-    public void save(WorkSaveRequestDto workSaveRequestDto) {
 
-        Employee employee = employeeRepository.findById(workSaveRequestDto.getEmployeeId())
+    @Transactional
+    public void save(WorkSaveRequestDto requestDto) {
+
+        Employee employee = employeeRepository.findById(requestDto.getEmployeeId())
                 .orElseThrow(() -> CustomException.builder()
                         .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                         .message("존재하지 않는 직원입니다.")
                         .fieldName("employeeId")
-                        .rejectValue(workSaveRequestDto.getEmployeeId().toString())
+                        .rejectValue(requestDto.getEmployeeId().toString())
                         .build());
 
-        Hours hours = getHours(workSaveRequestDto.getHoursId());
+        Hours hours = getHours(requestDto.getHoursId());
 
-        workRepository.save(workSaveRequestDto.toEntity(employee, hours));
+        workRepository.save(requestDto.toEntity(employee, hours));
     }
 
 
     @Transactional
-    public void update(Long id, WorkUpdateRequestDto workUpdateRequestDto) {
+    public void update(Long id, WorkUpdateRequestDto requestDto) {
 
         Work work = workRepository.findById(id)
                 .orElseThrow(() -> CustomException.builder()
@@ -60,20 +61,19 @@ public class WorkService {
                         .build());
 
         Employee employee = work.getEmployee();
-
-        if (!workUpdateRequestDto.getEmployeeId().equals(employee.getId())) {
-            employee = employeeRepository.findById(workUpdateRequestDto.getEmployeeId())
+        if (!requestDto.getEmployeeId().equals(employee.getId())) {
+            employee = employeeRepository.findById(requestDto.getEmployeeId())
                     .orElseThrow(() -> CustomException.builder()
                             .statusCode(StatusCode.RESOURCE_NOT_FOUND)
                             .message("존재하지 않는 직원입니다.")
                             .fieldName("employeeId")
-                            .rejectValue(workUpdateRequestDto.getEmployeeId().toString())
+                            .rejectValue(requestDto.getEmployeeId().toString())
                             .build());
         }
 
-        Hours hours = getHours(workUpdateRequestDto.getHoursId());
+        Hours hours = getHours(requestDto.getHoursId());
 
-        work.update(employee, hours, workUpdateRequestDto.getDate(), workUpdateRequestDto.getStartTime(), workUpdateRequestDto.getEndTime());
+        work.update(employee, hours, requestDto.getDate(), requestDto.getStartTime(), requestDto.getEndTime());
     }
 
     @Transactional
@@ -91,6 +91,7 @@ public class WorkService {
 
     }
 
+
     @Transactional(readOnly = true)
     public WorkResponseDto getWork(Long id) {
 
@@ -107,19 +108,20 @@ public class WorkService {
 
 
     @Transactional(readOnly = true)
-    public Page<WorkResponseDto> getWorkList(CustomUserDetails customUserDetails, Long employeeId, LocalDate dateFrom, LocalDate dateTo, Pageable pageable) {
+    public Page<WorkResponseDto> getWorkList(User loginUser, Long employeeId, LocalDate dateFrom, LocalDate dateTo, Pageable pageable) {
 
-        return workRepository.findByUserAndPeriodAndEmployee(customUserDetails.getUser(), dateFrom, dateTo, employeeId, pageable)
+        return workRepository.findByUserAndPeriodAndEmployee(loginUser, dateFrom, dateTo, employeeId, pageable)
                 .map(WorkResponseDto::new);
     }
 
+
     @Transactional(readOnly = true)
-    public List<WorkResponseDto> getWorkCalendar(LocalDate date, CustomUserDetails customUserDetails) {
+    public List<WorkResponseDto> getWorkCalendar(LocalDate date, User loginUser) {
 
-        LocalDate start = date.withDayOfMonth(1);
-        LocalDate end = LocalDate.now().minusDays(1);
+        final LocalDate start = date.withDayOfMonth(1);
+        final LocalDate end = LocalDate.now().minusDays(1);
 
-        return workRepository.findByDateBetween(customUserDetails.getUser(), start, end).stream()
+        return workRepository.findByDateBetween(loginUser, start, end).stream()
                 .map(WorkResponseDto::new)
                 .collect(Collectors.toList());
     }

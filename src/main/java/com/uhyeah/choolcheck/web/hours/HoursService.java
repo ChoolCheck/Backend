@@ -1,6 +1,7 @@
 package com.uhyeah.choolcheck.web.hours;
 
 import com.uhyeah.choolcheck.domain.entity.Hours;
+import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.domain.repository.HoursRepository;
 import com.uhyeah.choolcheck.domain.repository.ScheduleRepository;
 import com.uhyeah.choolcheck.domain.repository.WorkRepository;
@@ -8,7 +9,6 @@ import com.uhyeah.choolcheck.global.exception.CustomException;
 import com.uhyeah.choolcheck.global.exception.StatusCode;
 import com.uhyeah.choolcheck.web.hours.dto.HoursResponseDto;
 import com.uhyeah.choolcheck.web.hours.dto.HoursSaveRequestDto;
-import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +25,10 @@ public class HoursService {
     private final WorkRepository workRepository;
 
     @Transactional
-    public void save(HoursSaveRequestDto hoursSaveRequestDto, CustomUserDetails customUserDetails) {
+    public void save(HoursSaveRequestDto requestDto, User loginUser) {
 
-        checkTitleDuplication(hoursSaveRequestDto.getTitle(), customUserDetails);
-        hoursRepository.save(hoursSaveRequestDto.toEntity(customUserDetails.getUser()));
+        checkTitleDuplication(requestDto.getTitle(), loginUser);
+        hoursRepository.save(requestDto.toEntity(loginUser));
     }
 
 
@@ -64,17 +64,17 @@ public class HoursService {
     }
 
     @Transactional(readOnly = true)
-    public List<HoursResponseDto> getHoursList(CustomUserDetails customUserDetails) {
+    public List<HoursResponseDto> getHoursList(User loginUser) {
 
-        return hoursRepository.findByUser(customUserDetails.getUser()).stream()
+        return hoursRepository.findByUser(loginUser).stream()
                 .map(HoursResponseDto::new)
                 .collect(Collectors.toList());
     }
 
 
-    private void checkTitleDuplication(String title, CustomUserDetails customUserDetails) {
+    private void checkTitleDuplication(String title, User loginUser) {
 
-        if (hoursRepository.existsByTitleAndUser(title, customUserDetails.getUser())) {
+        if (hoursRepository.existsByTitleAndUser(title, loginUser)) {
             throw CustomException.builder()
                     .statusCode(StatusCode.DUPLICATE_RESOURCE)
                     .message("중복된 근무형태명 입니다.")
