@@ -1,5 +1,6 @@
 package com.uhyeah.choolcheck.web.memo;
 
+import com.uhyeah.choolcheck.web.memo.dto.MemoCalendarResponseDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoResponseDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoSaveRequestDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoUpdateRequestDto;
@@ -53,6 +54,12 @@ public class MemoController {
     public ResponseEntity<List<MemoResponseDto>> getMemoByDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         return ResponseEntity.ok(memoService.getMemoByDate(date, customUserDetails.getUser()));
+    }
+
+    @GetMapping("/calendar")
+    public ResponseEntity<List<MemoCalendarResponseDto>> getMemoCalendar(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        return ResponseEntity.ok(memoService.getMemoCalendar(date, customUserDetails.getUser()));
     }
 
 }

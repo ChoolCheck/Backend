@@ -10,4 +10,6 @@ import java.util.List;
 public interface MemoRepository extends JpaRepository<Memo, Long> {
 
     List<Memo> findByUserAndDate(User user, LocalDate date);
+
+    boolean existsByUserAndDate(User user, LocalDate date);
 }

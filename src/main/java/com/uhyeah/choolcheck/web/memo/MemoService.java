@@ -5,6 +5,7 @@ import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.domain.repository.MemoRepository;
 import com.uhyeah.choolcheck.global.exception.CustomException;
 import com.uhyeah.choolcheck.global.exception.StatusCode;
+import com.uhyeah.choolcheck.web.memo.dto.MemoCalendarResponseDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoResponseDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoSaveRequestDto;
 import com.uhyeah.choolcheck.web.memo.dto.MemoUpdateRequestDto;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,6 +77,24 @@ public class MemoService {
         return memoRepository.findByUserAndDate(loginUser, date).stream()
                 .map(MemoResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<MemoCalendarResponseDto> getMemoCalendar(LocalDate date, User loginUser) {
+
+        final LocalDate start = date.withDayOfMonth(1);
+        final LocalDate end = date.withDayOfMonth(date.lengthOfMonth());
+
+        List<MemoCalendarResponseDto> responseDtos = new ArrayList<>();
+        for (LocalDate d=start; d.isEqual(end); d = d.plusDays(1)) {
+            responseDtos.add(MemoCalendarResponseDto.builder()
+                    .date(d)
+                    .exist(memoRepository.existsByUserAndDate(loginUser, date))
+                    .build());
+        }
+
+        return responseDtos;
     }
 
 }
