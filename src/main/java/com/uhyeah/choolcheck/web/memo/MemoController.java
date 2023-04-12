@@ -56,7 +56,7 @@ public class MemoController {
         return ResponseEntity.ok(memoService.getMemoByDate(date, customUserDetails.getUser()));
     }
 
-    @GetMapping("/calendar")
+    @GetMapping("/month")
     public ResponseEntity<List<MemoCalendarResponseDto>> getMemoCalendar(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate date, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         return ResponseEntity.ok(memoService.getMemoCalendar(date, customUserDetails.getUser()));
