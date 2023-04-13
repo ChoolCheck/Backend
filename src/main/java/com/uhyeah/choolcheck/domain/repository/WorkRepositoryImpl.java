@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.uhyeah.choolcheck.domain.entity.QEmployee.employee;
 import static com.uhyeah.choolcheck.domain.entity.QWork.work;
 
 @Repository
@@ -27,6 +28,7 @@ public class WorkRepositoryImpl implements QueryDSLRepository<Work> {
 
         List<Work> content = jpaQueryFactory
                 .selectFrom(work)
+                .innerJoin(work.employee, employee)
                 .where(userEq(user), dateBetween(dateFrom, dateTo), employeeIdEq(employeeId))
                 .orderBy(work.date.desc())
                 .offset(pageable.getOffset())

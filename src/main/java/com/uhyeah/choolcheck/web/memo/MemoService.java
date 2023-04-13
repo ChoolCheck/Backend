@@ -87,10 +87,11 @@ public class MemoService {
         final LocalDate end = date.withDayOfMonth(date.lengthOfMonth());
 
         List<MemoCalendarResponseDto> responseDtos = new ArrayList<>();
-        for (LocalDate d=start; d.isEqual(end); d = d.plusDays(1)) {
+        for (int i=0; i<date.lengthOfMonth(); i++) {
+            LocalDate d = date.plusDays(i);
             responseDtos.add(MemoCalendarResponseDto.builder()
                     .date(d)
-                    .exist(memoRepository.existsByUserAndDate(loginUser, date))
+                    .exist(memoRepository.existsByUserAndDate(loginUser, d))
                     .build());
         }
 

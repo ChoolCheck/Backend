@@ -29,7 +29,7 @@ public class WorkResponseDto {
 
     private final Color color;
 
-    @QueryProjection
+
     public WorkResponseDto(Work work) {
         this.id = work.getId();
         this.name = getEmployeeName(work.getEmployee());
@@ -40,6 +40,17 @@ public class WorkResponseDto {
         this.color = work.getEmployee().getColor();
     }
 
+
+    @QueryProjection
+    public WorkResponseDto(Long id, String name, LocalDate date, LocalTime startTime, LocalTime endTime, String hours, Color color) {
+        this.id = id;
+        this.name = name;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.hours = hours;
+        this.color = color;
+    }
 
     private String getEmployeeName(Employee employee) {
 
