@@ -57,6 +57,7 @@ public class WorkRepositoryImpl implements QueryDSLRepository<Work> {
     }
 
     private BooleanExpression employeeIdEq(Long employeeId) {
+
         if(employeeId == null) {
             return null;
         }

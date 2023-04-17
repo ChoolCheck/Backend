@@ -2,7 +2,6 @@ package com.uhyeah.choolcheck.domain.entity;
 
 import com.uhyeah.choolcheck.domain.enums.Color;
 import com.uhyeah.choolcheck.domain.enums.Role;
-import com.uhyeah.choolcheck.web.employee.dto.EmployeeUpdateRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,7 +37,7 @@ public class Employee {
     @Builder
     public Employee(User user, String name, Role role, Color color) {
         this.user = user;
-        this.name = name;
+        this.name = getEmployeeName();
         this.role = role;
         this.color = color;
         this.delFlag = false;
@@ -52,5 +51,14 @@ public class Employee {
 
     public void setDelFlag() {
         this.delFlag = true;
+    }
+
+
+    private String getEmployeeName() {
+
+        if (delFlag) {
+            return name += "(X)";
+        }
+        return name;
     }
 }

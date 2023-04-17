@@ -32,7 +32,7 @@ public class WorkResponseDto {
 
     public WorkResponseDto(Work work) {
         this.id = work.getId();
-        this.name = getEmployeeName(work.getEmployee());
+        this.name = work.getEmployee().getName();
         this.date = work.getDate();
         this.startTime = work.getStartTime();
         this.endTime = work.getEndTime();
@@ -52,15 +52,16 @@ public class WorkResponseDto {
         this.color = color;
     }
 
-    private String getEmployeeName(Employee employee) {
 
-        String name = employee.getName();
-
-        if (employee.isDelFlag()) {
-            name += "(X)";
-        }
-        return name;
-    }
+//    private String getEmployeeName(Employee employee) {
+//
+//        String name = employee.getName();
+//
+//        if (employee.isDelFlag()) {
+//            name += "(X)";
+//        }
+//        return name;
+//    }
 
 
     private String getHoursTitle(Hours hours) {
