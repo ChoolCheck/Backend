@@ -49,10 +49,10 @@ public class StatisticsService {
     private long calculateTime(LocalTime startTime, LocalTime endTime) {
 
         if (endTime.isBefore(startTime)) {
-            return Duration.between(startTime, endTime).toHours() + 24;
+            return Duration.between(startTime, endTime).toMinutes() + 24 * 60;
         }
         else {
-            return Duration.between(startTime, endTime).toHours();
+            return Duration.between(startTime, endTime).toMinutes();
         }
     }
 
