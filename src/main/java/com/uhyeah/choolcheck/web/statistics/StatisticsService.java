@@ -5,7 +5,6 @@ import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.domain.entity.Work;
 import com.uhyeah.choolcheck.domain.repository.EmployeeRepository;
 import com.uhyeah.choolcheck.domain.repository.WorkRepository;
-import com.uhyeah.choolcheck.web.user.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +33,7 @@ public class StatisticsService {
         List<StatisticsResponseDto> statisticsResponseDtoList = new ArrayList<>();
         for (Employee employee : employeeList) {
 
-            long totalTime = getTotalTime(workList, employee);
+            double totalTime = getTotalTime(workList, employee);
 
             statisticsResponseDtoList.add(StatisticsResponseDto.builder()
                     .name(employee.getName())
@@ -46,22 +45,22 @@ public class StatisticsService {
     }
 
 
-    private long calculateTime(LocalTime startTime, LocalTime endTime) {
+    private double calculateHour(LocalTime startTime, LocalTime endTime) {
 
         if (endTime.isBefore(startTime)) {
-            return Duration.between(startTime, endTime).toMinutes() + 24 * 60;
+            return (Duration.between(startTime, endTime).toMinutes() + (24 * 60)) / 60.0;
         }
         else {
-            return Duration.between(startTime, endTime).toMinutes();
+            return Duration.between(startTime, endTime).toMinutes() / 60.0;
         }
     }
 
 
-    private long getTotalTime(List<Work> workList, Employee employee) {
+    private double getTotalTime(List<Work> workList, Employee employee) {
 
         return workList.stream()
                 .filter(work -> work.getEmployee().equals(employee))
-                .mapToLong(work -> calculateTime(work.getStartTime(), work.getEndTime()))
+                .mapToDouble(work -> calculateHour(work.getStartTime(), work.getEndTime()))
                 .sum();
     }
 }
