@@ -37,7 +37,7 @@ public class Employee {
     @Builder
     public Employee(User user, String name, Role role, Color color) {
         this.user = user;
-        this.name = getEmployeeName();
+        this.name = name;
         this.role = role;
         this.color = color;
         this.delFlag = false;
