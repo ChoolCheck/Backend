@@ -53,12 +53,10 @@ public class Employee {
         this.delFlag = true;
     }
 
-
-//    private String getEmployeeName() {
-//
-//        if (delFlag) {
-//            return name += "(X)";
-//        }
-//        return name;
-//    }
+    public String getName() {
+        if (delFlag) {
+            return name += "(X)";
+        }
+        return name;
+    }
 }
