@@ -54,11 +54,11 @@ public class Employee {
     }
 
 
-    private String getEmployeeName() {
-
-        if (delFlag) {
-            return name += "(X)";
-        }
-        return name;
-    }
+//    private String getEmployeeName() {
+//
+//        if (delFlag) {
+//            return name += "(X)";
+//        }
+//        return name;
+//    }
 }
