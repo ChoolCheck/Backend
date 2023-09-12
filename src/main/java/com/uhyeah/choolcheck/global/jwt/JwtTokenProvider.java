@@ -1,6 +1,6 @@
 package com.uhyeah.choolcheck.global.jwt;
 
-import com.uhyeah.choolcheck.global.RedisService;
+import com.uhyeah.choolcheck.global.RedisUtil;
 import com.uhyeah.choolcheck.global.exception.CustomException;
 import com.uhyeah.choolcheck.global.exception.StatusCode;
 import com.uhyeah.choolcheck.web.user.CustomUserDetailsService;
@@ -42,13 +42,13 @@ public class JwtTokenProvider {
 
     private final Key key;
     private final CustomUserDetailsService customUserDetailsService;
-    private final RedisService redisService;
+    private final RedisUtil redisUtil;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, CustomUserDetailsService customUserDetailsService, RedisService redisService) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, CustomUserDetailsService customUserDetailsService, RedisUtil redisUtil) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.customUserDetailsService = customUserDetailsService;
-        this.redisService = redisService;
+        this.redisUtil = redisUtil;
     }
 
 
@@ -110,7 +110,7 @@ public class JwtTokenProvider {
 
     public TokenResponseDto reissueAccessToken(String accessToken, String refreshToken, String reissueIp) {
 
-        String ip = redisService.get(refreshToken);
+        String ip = redisUtil.get(refreshToken);
 
         validateToken(refreshToken);
 

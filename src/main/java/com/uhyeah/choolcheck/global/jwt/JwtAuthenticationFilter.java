@@ -1,9 +1,8 @@
 package com.uhyeah.choolcheck.global.jwt;
 
-import com.uhyeah.choolcheck.global.RedisService;
+import com.uhyeah.choolcheck.global.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -22,7 +21,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisService redisService;
+    private final RedisUtil redisUtil;
 
 
     @Override
@@ -33,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null) {
             jwtTokenProvider.validateToken(token);
 
-            String isLogout = redisService.get(token);
+            String isLogout = redisUtil.get(token);
 
             if(isLogout == null) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);

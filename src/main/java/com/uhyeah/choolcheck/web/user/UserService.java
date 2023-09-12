@@ -3,7 +3,7 @@ package com.uhyeah.choolcheck.web.user;
 import com.uhyeah.choolcheck.domain.entity.User;
 import com.uhyeah.choolcheck.domain.repository.UserRepository;
 import com.uhyeah.choolcheck.global.MailService;
-import com.uhyeah.choolcheck.global.RedisService;
+import com.uhyeah.choolcheck.global.RedisUtil;
 import com.uhyeah.choolcheck.global.SiteProperties;
 import com.uhyeah.choolcheck.global.exception.CustomException;
 import com.uhyeah.choolcheck.global.exception.StatusCode;
@@ -31,7 +31,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManagerBuilder managerBuilder;
-    private final RedisService redisService;
+    private final RedisUtil redisUtil;
     private final MailService mailService;
 
 
@@ -53,7 +53,7 @@ public class UserService {
         TokenResponseDto tokenResponseDto = tokenProvider.generateTokenDto(authentication);
 
         long refreshTokenExpiration = tokenProvider.getExpiration(tokenResponseDto.getRefreshToken());
-        redisService.set(tokenResponseDto.getRefreshToken(), ip, Duration.ofMillis(refreshTokenExpiration));
+        redisUtil.set(tokenResponseDto.getRefreshToken(), ip, Duration.ofMillis(refreshTokenExpiration));
 
         return tokenResponseDto;
     }
@@ -70,7 +70,7 @@ public class UserService {
         String accessToken = tokenProvider.resolveToken(bearerToken);
         long expiration = tokenProvider.getExpiration(accessToken);
 
-        redisService.set(accessToken, "logout", Duration.ofMillis(expiration));
+        redisUtil.set(accessToken, "logout", Duration.ofMillis(expiration));
 
         SecurityContextHolder.clearContext();
     }
@@ -101,7 +101,7 @@ public class UserService {
 
         mailService.sendMail(email, title, content);
 
-        redisService.set(email, code, Duration.ofMinutes(EMAIL_CODE_EXPIRATION_MINUTES));
+        redisUtil.set(email, code, Duration.ofMinutes(EMAIL_CODE_EXPIRATION_MINUTES));
     }
 
 
@@ -164,7 +164,7 @@ public class UserService {
 
     private void validateCode(String email, String requestCode) {
 
-        String code = redisService.get(email);
+        String code = redisUtil.get(email);
 
         if (code == null || !code.equals(requestCode)) {
             throw CustomException.builder()
